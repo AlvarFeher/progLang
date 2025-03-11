@@ -1,0 +1,13 @@
+package Token;
+
+public enum TokenType {
+IDENTIFIER,
+    KEYWORD,
+    INT_CONSTANT,
+    STRING_CONSTANT,
+    BOOL_CONSTANT,
+    RELATIONAL_OP,
+    LOGICAL_OP,
+    ARITHMETIC_OP,
+    SPECIAL_SYMBOL
+}
