@@ -1,7 +1,7 @@
 package Token;
 
 public enum Keywords {
-    FUNCIO, LLAVORS, FISI, SI, RETORNAR, REPETIR, FINS, MENTRE, FER, SENCER, LOGIC;
+    FUNCIO, LLAVORS, FISI, SI, RETORNAR, REPETIR, FINS, MENTRE, FER, SENCER, LOGIC, INICI, FI;
 
     public static boolean isKeyword(String word){
         for(Keywords k : Keywords.values()){

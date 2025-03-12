@@ -16,10 +16,10 @@ FUNCIO PRINCIPAL() {
     FISI;
 
     // Bucle "mentre" per comptar enrere
-    MENTRE num > 0 FER {
+    MENTRE num > 0 FER
         ESCRIURE("Valor actual de num: ", num);
         num = num - 1;
-    } FIMENTRE;
+    FIMENTRE;
 
     // Crida a la funció FACTORIAL i mostra el resultat
     SENCER fact;
@@ -32,10 +32,14 @@ FUNCIO FACTORIAL(SENCER n) {
     resultat = 1;
 
     // Bucle "repetir" per calcular el factorial
-    REPETIR {
+    REPETIR
         resultat = resultat * n;
         n = n - 1;
-    } FINS n == 0;
+    FINS n == 0;
 
     RETORNAR resultat;
 }
+
+INICI
+    PRINCIPAL();
+FI
