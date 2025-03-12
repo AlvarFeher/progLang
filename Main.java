@@ -9,7 +9,7 @@ public class Main {
         LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzer("Input/input1.txt");
         List<Token> tokens =  lexicalAnalyzer.tokenize();
         for(Token t: tokens){
-            System.out.println(t.getToken());
+            System.out.println(t.getToken() + " "+t.getTokenType());
         }
     }
 }

@@ -35,7 +35,7 @@ public class LexicalAnalyzer {
         String content = new String(Files.readAllBytes(Paths.get(filepath)));
         int pos=0;
         int len=content.length();
-        StringBuilder sb = new StringBuilder();
+
 
         // iterate through the entire content string
         while(pos < len){
@@ -59,7 +59,7 @@ public class LexicalAnalyzer {
             // Constant cadena: "khsdbvfks" (only to print!!)
             if(curr == '"'){
                 pos++;
-
+                StringBuilder sb = new StringBuilder();
                 while(pos < len && content.charAt(pos) != '"'){
                     sb.append(content.charAt(pos));
                     pos++;
@@ -72,6 +72,7 @@ public class LexicalAnalyzer {
 
             // Identifier: "test7_Test" for example
             if(Character.isLetter(curr)){
+                StringBuilder sb = new StringBuilder();
                 while(pos < len && Character.isLetterOrDigit(content.charAt(pos)) || content.charAt(pos) == '_'){
                     sb.append(content.charAt(pos));
                     pos++;
@@ -79,13 +80,68 @@ public class LexicalAnalyzer {
                 String word = sb.toString();
                 if (word.length() > 32) {
                     System.err.println("Identifier exceeds maximum allowed length of 32 characters: " + word);
+                    word = word.substring(0, 32);
                 }
                 if(Keywords.isKeyword(word)){
                     tokens.add(new Token(TokenType.KEYWORD,word));
                 } else if (isLogicalop(word)) {
                     tokens.add(new Token(TokenType.LOGICAL_OP,word));
+                } else if (word.equalsIgnoreCase("CERT") || word.equalsIgnoreCase("FALS")) {
+                    tokens.add(new Token(TokenType.BOOL_CONSTANT,word));
+                }else{
+                    tokens.add(new Token(TokenType.IDENTIFIER,word));
                 }
+                continue;
             }
+
+            // digits
+            if(Character.isDigit(curr)){
+                StringBuilder sb = new StringBuilder();
+                while(pos < len && Character.isDigit(content.charAt(pos))){
+                    sb.append(content.charAt(pos));
+                    pos++;
+                }
+                tokens.add(new Token(TokenType.INT_CONSTANT,sb.toString()));
+                continue;
+            }
+
+            //operators
+            if(curr == '+' || curr == '-'  || curr == '/'|| curr == '*' || curr == '='){
+                tokens.add(new Token(TokenType.ARITHMETIC_OP,String.valueOf(curr)));
+                pos++;
+                continue;
+            }
+            if(curr == '<' || curr == '>' ){
+                tokens.add(new Token(TokenType.RELATIONAL_OP,String.valueOf(curr)));
+                pos++;
+                continue;
+            }
+            if(curr == '!' && (pos+1 < len) && content.charAt(pos+1) == '='){
+                tokens.add(new Token(TokenType.RELATIONAL_OP,"!="));
+                pos+=2; // skip ! and =
+                continue;
+            }
+            if(curr == '=' && (pos+1 < len) && content.charAt(pos+1) == '='){
+                tokens.add(new Token(TokenType.RELATIONAL_OP,"=="));
+                pos+=2; // skip ! and =
+                continue;
+            }
+            if(curr == '<' && (pos+1 < len) && content.charAt(pos+1) == '='){
+                tokens.add(new Token(TokenType.RELATIONAL_OP,"<="));
+                pos+=2; // skip ! and =
+                continue;
+            }
+            if(curr == '>' && (pos+1 < len) && content.charAt(pos+1) == '='){
+                tokens.add(new Token(TokenType.RELATIONAL_OP,">="));
+                pos+=2; // skip ! and =
+                continue;
+            }
+            if("(),;:[]{}".indexOf(curr) != -1){
+                tokens.add(new Token(TokenType.SPECIAL_SYMBOL,String.valueOf(curr)));
+                pos++;
+                continue;
+            }
+
             pos++;
         }
 
