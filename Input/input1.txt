@@ -1,27 +1,26 @@
-// Exemple de programa en Ton-A
+// sample code
 
 FUNCIO PRINCIPAL() {
-    // Declaració i assignació d'una variable
+
     SENCER num;
     num = 5;
 
-    // Mostra el valor inicial
-    ESCRIURE("Valor inicial de num: ", num);
 
-    // Estructura condicional
+    ESCRIURE("Valor inicial de num: ", num);
+// sample comment
+
     SI num > 0 LLAVORS
         ESCRIURE("El número és positiu");
     SINO
         ESCRIURE("El número és zero o negatiu");
     FISI;
 
-    // Bucle "mentre" per comptar enrere
+
     MENTRE num > 0 FER
         ESCRIURE("Valor actual de num: ", num);
         num = num - 1;
     FIMENTRE;
 
-    // Crida a la funció FACTORIAL i mostra el resultat
     SENCER fact;
     fact = FACTORIAL(5);
     ESCRIURE("Factorial de 5: ", fact);
@@ -30,8 +29,7 @@ FUNCIO PRINCIPAL() {
 FUNCIO FACTORIAL(SENCER n) {
     SENCER resultat;
     resultat = 1;
-
-    // Bucle "repetir" per calcular el factorial
+// sample comment
     REPETIR
         resultat = resultat * n;
         n = n - 1;
@@ -41,5 +39,6 @@ FUNCIO FACTORIAL(SENCER n) {
 }
 
 INICI
+    SENCER a = 1;
     PRINCIPAL();
 FI
