@@ -10,10 +10,16 @@ import java.util.List;
 public class LexicalAnalyzer {
     private String filepath;
     private List<Token> tokens;
+    private int pos;
+    private int len;
+    String content;
 
-    public LexicalAnalyzer(String filepath) {
+    public LexicalAnalyzer(String filepath) throws IOException {
         this.tokens = new ArrayList<>();
         this.filepath = filepath;
+        content = new String(Files.readAllBytes(Paths.get(filepath)));
+        pos = 0;
+        len = content.length();
     }
 
     private boolean isLogicalop(String word){
@@ -31,11 +37,7 @@ public class LexicalAnalyzer {
      * @return list of Tokens
      * @throws IOException
      */
-    public List<Token> tokenize() throws IOException {
-        String content = new String(Files.readAllBytes(Paths.get(filepath)));
-        int pos=0;
-        int len=content.length();
-
+    public Token nextToken() throws IOException {
 
         // iterate through the entire content string
         while(pos < len){
@@ -68,6 +70,7 @@ public class LexicalAnalyzer {
                     pos++;
                 }
                 tokens.add(new Token(TokenType.STRING_CONSTANT, sb.toString()));
+                return new Token(TokenType.STRING_CONSTANT, sb.toString());
             }
 
             // Identifier: "test7_Test" for example
@@ -84,14 +87,17 @@ public class LexicalAnalyzer {
                 }
                 if(Keywords.isKeyword(word)){
                     tokens.add(new Token(TokenType.KEYWORD,word));
+                    return new Token(TokenType.KEYWORD,word);
                 } else if (isLogicalop(word)) {
                     tokens.add(new Token(TokenType.LOGICAL_OP,word));
+                    return new Token(TokenType.LOGICAL_OP,word);
                 } else if (word.equalsIgnoreCase("CERT") || word.equalsIgnoreCase("FALS")) {
                     tokens.add(new Token(TokenType.BOOL_CONSTANT,word));
+                    return new Token(TokenType.BOOL_CONSTANT,word);
                 }else{
                     tokens.add(new Token(TokenType.IDENTIFIER,word));
+                    return new Token(TokenType.IDENTIFIER,word);
                 }
-                continue;
             }
 
             // digits
@@ -102,49 +108,60 @@ public class LexicalAnalyzer {
                     pos++;
                 }
                 tokens.add(new Token(TokenType.INT_CONSTANT,sb.toString()));
-                continue;
+                return new Token(TokenType.INT_CONSTANT,sb.toString());
+
             }
 
             //operators
             if(curr == '+' || curr == '-'  || curr == '/'|| curr == '*' || curr == '='){
                 tokens.add(new Token(TokenType.ARITHMETIC_OP,String.valueOf(curr)));
+
                 pos++;
-                continue;
+                return new Token(TokenType.ARITHMETIC_OP,String.valueOf(curr));
+
             }
             if(curr == '<' || curr == '>' ){
                 tokens.add(new Token(TokenType.RELATIONAL_OP,String.valueOf(curr)));
                 pos++;
-                continue;
+                return new Token(TokenType.RELATIONAL_OP,String.valueOf(curr));
+
+
             }
             if(curr == '!' && (pos+1 < len) && content.charAt(pos+1) == '='){
                 tokens.add(new Token(TokenType.RELATIONAL_OP,"!="));
                 pos+=2; // skip ! and =
-                continue;
+                return new Token(TokenType.RELATIONAL_OP,"!=");
+
+
             }
             if(curr == '=' && (pos+1 < len) && content.charAt(pos+1) == '='){
                 tokens.add(new Token(TokenType.RELATIONAL_OP,"=="));
                 pos+=2; // skip ! and =
-                continue;
+                return new Token(TokenType.RELATIONAL_OP,"==");
+
+
             }
             if(curr == '<' && (pos+1 < len) && content.charAt(pos+1) == '='){
                 tokens.add(new Token(TokenType.RELATIONAL_OP,"<="));
                 pos+=2; // skip ! and =
-                continue;
+                return new Token(TokenType.RELATIONAL_OP,"<=");
+
+
             }
             if(curr == '>' && (pos+1 < len) && content.charAt(pos+1) == '='){
                 tokens.add(new Token(TokenType.RELATIONAL_OP,">="));
                 pos+=2; // skip ! and =
-                continue;
+                return new Token(TokenType.RELATIONAL_OP,">=");
             }
             if("(),;:[]{}".indexOf(curr) != -1){
                 tokens.add(new Token(TokenType.SPECIAL_SYMBOL,String.valueOf(curr)));
                 pos++;
-                continue;
+                return new Token(TokenType.SPECIAL_SYMBOL,String.valueOf(curr));
+
             }
 
             pos++;
         }
-
-        return tokens;
+        return null;
     }
 }

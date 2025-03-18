@@ -5,7 +5,6 @@ FUNCIO PRINCIPAL() {
     SENCER num;
     num = 5;
 
-
     ESCRIURE("Valor inicial de num: ", num);
 // sample comment
 
