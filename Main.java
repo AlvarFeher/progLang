@@ -22,14 +22,15 @@ public class Main {
         Parser parser = new Parser();
         List<Token> tokens = new ArrayList<>();
         Token token;
+
         while((token = lexicalAnalyzer.nextToken()) != null){
             tokens.add(token);
             parser.getFirst(token);
-            // add token to parser
+            parser.getFollow(token);
+            parser.generateParseTree(token);
         }
 
-        for(Token t: tokens){
-            //System.out.println(t.getToken() + " "+t.getTokenType());
-        }
+        ParseNode root = parser.getRoot();
+
     }
 }

@@ -2,27 +2,17 @@ package Parser;
 
 import Token.Token;
 
+import java.util.List;
+
 public class ParseNode {
-    private Token token;
-    private ParseNode[] children;
+    private String label;
+    private List<ParseNode> children;
 
-    public ParseNode(Token token) {
-        this.token = token;
+    public ParseNode(String label) {
+        this.label = label;
     }
 
-    public Token getToken() {
-        return token;
-    }
-
-    public void setToken(Token token) {
-        this.token = token;
-    }
-
-    public ParseNode[] getChildren() {
-        return children;
-    }
-
-    public void setChildren(ParseNode[] children) {
-        this.children = children;
+    public void addChildren(ParseNode newChild){
+        children.add(newChild);
     }
 }
