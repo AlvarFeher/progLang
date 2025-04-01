@@ -1,13 +1,11 @@
 package Parser;
 
-import Token.TokenType;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.lang.reflect.Type;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +14,7 @@ public class LoadFirstFollow {
     private Map<String,List<String>>follow;
 
     public LoadFirstFollow() throws FileNotFoundException {
-        jsonLoader("Grammar.json");
+        jsonLoader("firstFollow.json");
     }
 
     private void jsonLoader(String filepath) throws FileNotFoundException {

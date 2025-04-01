@@ -1,0 +1,32 @@
+{
+  "FIRST": {
+    "P": ["CONST", "SENCER","LOGIC","funcio","inici"],
+    "Decl": ["CONST", "SENCER","LOGIC, funcio"],
+    "Dec_Cte_Var": ["CONST", "SENCER","LOGIC"],
+    "Dec_Fun": ["funcio"],
+    "Llista_Param": ["SENCER","LOGIC"],
+    "Tipus": ["SENCER","LOGIC"],
+    "Exp": ["+","-","not","cte_entera","cte_logica", "cte_cadena", "(", "id"],
+    "Exp_Simple": ["+","-","not","cte_entera","cte_logica", "cte_cadena", "(", "id"],
+    "Terme": ["cte_entera","cte_logica", "cte_cadena", "(", "id"],
+    "Factor": ["cte_entera","cte_logica", "cte_cadena", "(", "id","CERT","FALS"],
+    "Variable": ["id"],
+    "Llista_Inst": ["=","si","mentre","repetir","llegir","escriure","RETORNAR"],
+    "Inst": ["id","escriure", "llegir", "repetir", "mentre", "si", "retornar"]
+  },
+  "FOLLOW": {
+    "P": ["$"],
+    "Decl": ["CONST", "SENCER", "LOGIC", "FUNCIO", "INICI"],
+    "Dec_Cte_Var": ["CONST", "SENCER", "LOGIC", "FUNCIO", "INICI"],
+    "Dec_Fun": ["CONST", "SENCER", "LOGIC", "FUNCIO", "INICI"],
+    "Llista_Param": [")"],
+    "Tipus": ["id,="],
+    "Exp": ["(", ")", ";", "fins", "fer", "llavors", "sino", "fisi"],
+    "Exp_Simple": ["(", ")", ";", "fins", "fer", "llavors", "sino", "fisi"],
+    "Terme": ["(", ")", ";", "fins", "fer", "llavors", "sino", "fisi"],
+    "Factor": ["(", ")", ";", "fins", "fer", "llavors", "sino", "fisi"],
+    "Variable": ["=", ")",";"],
+    "Llista_Inst": ["}","fins","fimentre","fisi"],
+    "Inst":[";","}","fins","fimentre","fisi"]
+  }
+}

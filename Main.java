@@ -27,7 +27,7 @@ public class Main {
             tokens.add(token);
             parser.getFirst(token);
             parser.getFollow(token);
-            parser.generateParseTree(token);
+           // parser.generateParseTree(token);
         }
 
         ParseNode root = parser.getRoot();

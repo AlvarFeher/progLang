@@ -1,5 +1,6 @@
 package Parser;
 
+import Grammar.Grammar;
 import Token.Token;
 
 import java.io.FileNotFoundException;
@@ -13,12 +14,17 @@ public class Parser {
     private Token token;
     Stack<String> stack;
     LoadFirstFollow firstFollow;
+    Grammar grammar;
+    ParsingTable parsingTable;
+
     public Parser() throws FileNotFoundException {
         firstFollow = new LoadFirstFollow();
         stack = new Stack<>();
         stack.push("$"); // End marker
         stack.push("Program"); // Start symbol of grammar
+        grammar = new Grammar();
         this.root = new ParseNode("Program");
+        parsingTable = new ParsingTable(grammar.getGrammar(),firstFollow);
     }
 
     private String mapTokenToNonTerminal(Token token) {
@@ -26,26 +32,30 @@ public class Parser {
 
         switch (token.getTokenType()) {
             case KEYWORD:
-                switch (lexeme) {
-                    case "FUNCIO": return "FunctionDeclaration";
-                    case "SENCER": return "VariableDeclaration";
-                    case "ESCRIURE": return "PrintStatement";
-                    case "SI": return "IfStatement";
-                    case "MENTRE": return "WhileStatement";
-                    case "REPETIR": return "RepeatStatement";
-                    case "RETORNAR": return "ReturnStatement";
-                    case "INICI": return "MainBlock";
-                    default: return "Statement";
+                // Mapea las palabras clave a los no terminales correspondientes en tu gramática
+                if (lexeme.equals("FUNCIO")) {
+                    return "Dec_Fun"; // Declaración de funciones
+                } else if (lexeme.equals("CONST")) {
+                    return "Dec_Cte_Var"; // Declaración de constantes/variables
+                } else if (lexeme.equals("INICI")) {
+                    return "Inici"; // Inicio del programa
+                } else if (lexeme.equals("FI")) {
+                    return "FI"; // Fin del programa
+                } else if (lexeme.equals("ESCRIURE") || lexeme.equals("LLEGIR") ||
+                        lexeme.equals("SI") || lexeme.equals("MENTRE") ||
+                        lexeme.equals("REPETIR") || lexeme.equals("RETORNAR")) {
+                    return "Inst"; // Instrucción
+                } else {
+                    // Para otras palabras clave, podrías retornar un no terminal general
+                    return "Decl";
                 }
 
             case IDENTIFIER:
-                return "Expression";
-
+                return null;
             case INT_CONSTANT:
             case STRING_CONSTANT:
             case BOOL_CONSTANT:
-                return "Expression";
-
+                return null;
             case RELATIONAL_OP:
             case LOGICAL_OP:
             case ARITHMETIC_OP:
@@ -56,6 +66,7 @@ public class Parser {
                 return null;
         }
     }
+
 
     public void getFollow(Token token) {
         String nonTerminal = mapTokenToNonTerminal(token);
@@ -83,30 +94,15 @@ public class Parser {
 
 
     public void generateParseTree(Token token) {
-
+        parsingTable.buildTable();
 
     }
 
-    private boolean isTerminal(String symbol) {
-        return !firstFollow.getFirst(symbol).isEmpty() ? false : !symbol.equals("Program"); // crude fallback
-    }
 
-    private void applyRule(String nonTerminal, Stack<String> stack) {
-        String rule = getProduction(nonTerminal, tokens.get(currentToken).getToken());
-        if (rule != null) {
-            String[] symbols = rule.split(" ");
-            for (int i = symbols.length - 1; i >= 0; i--) {
-                stack.push(symbols[i]);
-            }
-        } else {
-            System.out.println("No production found for " + nonTerminal);
-        }
-    }
 
-    private String getProduction(String nonTerminal, String terminal) {
-        // Implement LL(1) parsing table lookup
-        return "Example_Production -> ..."; // Replace with actual logic
-    }
+
+
+
 
 
 }
