@@ -95,6 +95,7 @@ public class Parser {
 
     public void generateParseTree(Token token) {
         parsingTable.buildTable();
+        System.out.println("");
 
     }
 
