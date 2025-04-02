@@ -25,6 +25,9 @@ public class Parser {
         grammar = new Grammar();
         this.root = new ParseNode("Program");
         parsingTable = new ParsingTable(grammar.getGrammar(),firstFollow);
+        parsingTable.buildTable();
+        parsingTable.printTable();
+        System.out.println("\t"+root);
     }
 
     private String mapTokenToNonTerminal(Token token) {
@@ -94,8 +97,7 @@ public class Parser {
 
 
     public void generateParseTree(Token token) {
-        parsingTable.buildTable();
-        System.out.println("");
+
 
     }
 

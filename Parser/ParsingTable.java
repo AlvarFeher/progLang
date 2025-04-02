@@ -72,6 +72,19 @@ public class ParsingTable {
         return null;
     }
 
+    public void printTable() {
+        for(String nonTerminal : table.keySet()){
+            System.out.println(nonTerminal);
+            for(String terminal : table.get(nonTerminal).keySet()){
+                System.out.println("\t"+terminal);
+                for(String prod: table.get(nonTerminal).keySet()){
+                    System.out.println("\t\t"+table.get(nonTerminal).get(prod));
+                }
+
+            }
+        }
+    }
+
 
 
 }
