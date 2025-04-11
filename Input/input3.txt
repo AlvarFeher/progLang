@@ -1,0 +1,16 @@
+FUNCIO PRINCIPAL(SENCER a): SENCER{
+    SENCER resultat;
+    SI a == 1 LLAVORS
+        resultat = a + 1;
+    SINO
+        ESCRIURE("resultat es 0");
+        resultat = 0;
+    FISI;
+    RETORNAR resultat;
+};
+
+SENCER a;
+INICI
+    a = 1;
+    PRINCIPAL(a);
+FI

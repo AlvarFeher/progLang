@@ -1,0 +1,10 @@
+FUNCIO PRINCIPAL(SENCER a): SENCER{
+    SENCER resultat;
+    resultat = a + 1;
+    RETORNAR resultat;
+};
+SENCER a;
+INICI
+    a = 1;
+    PRINCIPAL(a);
+FI

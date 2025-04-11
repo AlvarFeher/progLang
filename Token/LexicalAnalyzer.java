@@ -76,10 +76,11 @@ public class LexicalAnalyzer {
             // Identifier: "test7_Test" for example
             if(Character.isLetter(curr)){
                 StringBuilder sb = new StringBuilder();
-                while(pos < len && Character.isLetterOrDigit(content.charAt(pos)) || content.charAt(pos) == '_'){
+                while (pos < len && (Character.isLetterOrDigit(content.charAt(pos)) || content.charAt(pos) == '_')) {
                     sb.append(content.charAt(pos));
                     pos++;
                 }
+
                 String word = sb.toString();
                 if (word.length() > 32) {
                     System.err.println("Identifier exceeds maximum allowed length of 32 characters: " + word);
@@ -112,14 +113,14 @@ public class LexicalAnalyzer {
 
             }
 
-            //operators
-            if(curr == '+' || curr == '-'  || curr == '/'|| curr == '*' || curr == '='){
-                tokens.add(new Token(TokenType.ARITHMETIC_OP,String.valueOf(curr)));
+            if(curr == '=' && (pos+1 < len) && content.charAt(pos+1) == '='){
+                tokens.add(new Token(TokenType.RELATIONAL_OP,"=="));
+                pos+=2; // skip ! and =
+                return new Token(TokenType.RELATIONAL_OP,"==");
 
-                pos++;
-                return new Token(TokenType.ARITHMETIC_OP,String.valueOf(curr));
 
             }
+
             if(curr == '<' || curr == '>' ){
                 tokens.add(new Token(TokenType.RELATIONAL_OP,String.valueOf(curr)));
                 pos++;
@@ -134,13 +135,7 @@ public class LexicalAnalyzer {
 
 
             }
-            if(curr == '=' && (pos+1 < len) && content.charAt(pos+1) == '='){
-                tokens.add(new Token(TokenType.RELATIONAL_OP,"=="));
-                pos+=2; // skip ! and =
-                return new Token(TokenType.RELATIONAL_OP,"==");
 
-
-            }
             if(curr == '<' && (pos+1 < len) && content.charAt(pos+1) == '='){
                 tokens.add(new Token(TokenType.RELATIONAL_OP,"<="));
                 pos+=2; // skip ! and =
@@ -152,6 +147,15 @@ public class LexicalAnalyzer {
                 tokens.add(new Token(TokenType.RELATIONAL_OP,">="));
                 pos+=2; // skip ! and =
                 return new Token(TokenType.RELATIONAL_OP,">=");
+            }
+
+            //operators
+            if(curr == '+' || curr == '-'  || curr == '/'|| curr == '*' || curr == '='){
+                tokens.add(new Token(TokenType.ARITHMETIC_OP,String.valueOf(curr)));
+
+                pos++;
+                return new Token(TokenType.ARITHMETIC_OP,String.valueOf(curr));
+
             }
             if("(),;:[]{}".indexOf(curr) != -1){
                 tokens.add(new Token(TokenType.SPECIAL_SYMBOL,String.valueOf(curr)));

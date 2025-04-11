@@ -27,8 +27,8 @@ public class Grammar {
 
         // Rule 3: Declaraciones de constantes/variables
         grammar.put("Dec_Cte_Var", Arrays.asList(
-                Arrays.asList("Const", "Id", "=", "Exp", ";"),
-                Arrays.asList("Tipus", "Id", ";")
+                Arrays.asList("Const", "ID", "=", "Exp", ";"),
+                Arrays.asList("Tipus", "ID", ";")
         ));
 
         // Rule 4: Declaración de funciones
@@ -86,13 +86,17 @@ public class Grammar {
 
         grammar.put("Factor", Arrays.asList(
                 Arrays.asList("(", "Exp", ")"),
-                Arrays.asList("ID"),
+                Arrays.asList("ID","FactorTail"),
                 Arrays.asList("cte_entera"),
                 Arrays.asList("cte_cadena"),
                 Arrays.asList("CERT"),
                 Arrays.asList("FALS")
         ));
 
+        grammar.put("FactorTail", Arrays.asList(
+                Arrays.asList("(", "Llista_expressio", ")"), // Function call
+                Arrays.asList("ε") // Just an ID (variable)
+        ));
 
         grammar.put("Inici", Arrays.asList(
                 Arrays.asList("INICI")
@@ -108,23 +112,33 @@ public class Grammar {
         ));
 
         grammar.put("Inst", Arrays.asList(
-
-                Arrays.asList("ID", "=", "Exp", ";"),
-
-                Arrays.asList("llegir", "(", "Llista_variables", ")", ";"),
-
-                Arrays.asList("escriure", "(", "Llista_expressio", ")", ";"),
-
-                Arrays.asList("si", "Exp", "llavors", "Llista_inst", "sino", "Llista_inst", "fisi"),
-
-                Arrays.asList("si", "Exp", "llavors", "Llista_inst", "fisi"),
-
-                Arrays.asList("repetir", "Llista_inst", "fins", "Exp", ";"),
-
-                Arrays.asList("mentre", "Exp", "fer", "Llista_inst", "fimentre"),
-
-                Arrays.asList("retornar", "Exp", ";")
+                Arrays.asList("ID", "InstTail"),
+                Arrays.asList("LLEGIR", "(", "Llista_variables", ")", ";"),
+                Arrays.asList("ESCRIURE", "(", "Llista_expressio", ")", ";"),
+                Arrays.asList("SI", "Exp", "LLAVORS", "Llista_inst", "SINO", "Llista_inst", "FISI",";"),
+                Arrays.asList("SI", "Exp", "LLAVORS", "Llista_inst", "FISI",";"),
+                Arrays.asList("REPETIR", "Llista_inst", "FINS", "Exp", ";"),
+                Arrays.asList("MENTRE", "Exp", "FER", "Llista_inst", "FIMENTRE",";"),
+                Arrays.asList("RETORNAR", "Exp", ";")
         ));
+
+        grammar.put("InstTail", Arrays.asList(
+                Arrays.asList("=", "Exp", ";"),
+                Arrays.asList("(", "Llista_expressio", ")", ";"),
+                Arrays.asList(";","ε"),
+                Arrays.asList("ε")
+        ));
+
+        grammar.put("Llista_expressio", Arrays.asList(
+                Arrays.asList("Exp", "Llista_expressio_tail"),
+                Arrays.asList("ε")
+        ));
+
+        grammar.put("Llista_expressio_tail", Arrays.asList(
+                Arrays.asList(",", "Exp", "Llista_expressio_tail"),
+                Arrays.asList("ε")
+        ));
+
 
 
 

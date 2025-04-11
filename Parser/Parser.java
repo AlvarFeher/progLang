@@ -54,17 +54,19 @@ public class Parser {
                 }
 
             case IDENTIFIER:
-                return null;
+                return "ID";
             case INT_CONSTANT:
+                return "cte_entera";
             case STRING_CONSTANT:
+                return "cte_cadena";
             case BOOL_CONSTANT:
-                return null;
+                return token.getToken().equalsIgnoreCase("CERT") ? "CERT" : "FALS";
             case RELATIONAL_OP:
-            case LOGICAL_OP:
-            case ARITHMETIC_OP:
+                return "oper_rel";
+            case LOGICAL_OP, ARITHMETIC_OP:
+                return token.getToken();
             case SPECIAL_SYMBOL:
-                return null;
-
+                return token.getToken();
             default:
                 return null;
         }

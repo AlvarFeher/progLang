@@ -23,7 +23,7 @@ FUNCIO PRINCIPAL(): SENCER{
     SENCER fact;
     fact = FACTORIAL(5);
     ESCRIURE("Factorial de 5: ", fact);
-}
+};
 
 FUNCIO FACTORIAL(SENCER n): SENCER {
     SENCER resultat;
@@ -35,7 +35,7 @@ FUNCIO FACTORIAL(SENCER n): SENCER {
     FINS n == 0;
 
     RETORNAR resultat;
-}
+};
 
 INICI
     SENCER a = 1;
