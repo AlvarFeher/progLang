@@ -118,25 +118,5 @@ public class LL1Parser {
         System.err.println("❌ Syntax Error: " + message);
     }
 
-    public static void main(String[] args) throws IOException {
-        Grammar g = new Grammar();
-        FirstFollowCalculator calc = new FirstFollowCalculator(g.getGrammar());
-        ParsingTableBuilder builder = new ParsingTableBuilder(
-                g.getGrammar(),
-                calc.firstSets,
-                calc.followSets
-        );
 
-        Map<String, Map<String, List<String>>> table = builder.buildParsingTable();
-        LL1Parser parser = new LL1Parser(g.getGrammar(), table);
-
-        // Example input: simulate a program like "INICI FI"
-        List<String> input = new ArrayList<>(Arrays.asList(
-                "INICI", "ID", "=", "cte_entera", ";", "FI"
-        ));
-        String filepath = "Input/input1.txt";
-
-
-        parser.parse(input);
-    }
 }

@@ -1,5 +1,5 @@
 // sample code
-
+SENCER fact;
 FUNCIO PRINCIPAL(): SENCER{
 
     SENCER num;
@@ -20,7 +20,7 @@ FUNCIO PRINCIPAL(): SENCER{
         num = num - 1;
     FIMENTRE;
 
-    SENCER fact;
+
     fact = FACTORIAL(5);
     ESCRIURE("Factorial de 5: ", fact);
 };
@@ -36,8 +36,8 @@ FUNCIO FACTORIAL(SENCER n): SENCER {
 
     RETORNAR resultat;
 };
-
+SENCER a;
 INICI
-    SENCER a = 1;
+    a = 1;
     PRINCIPAL();
 FI

@@ -94,17 +94,5 @@ public class ParsingTableBuilder {
         }
     }
 
-    public static void main(String[] args) {
-        Grammar g = new Grammar();
-        FirstFollowCalculator calc = new FirstFollowCalculator(g.getGrammar());
 
-        ParsingTableBuilder builder = new ParsingTableBuilder(
-                g.getGrammar(),
-                calc.firstSets,
-                calc.followSets
-        );
-
-        Map<String, Map<String, List<String>>> table = builder.buildParsingTable();
-        builder.printParsingTable(table);
-    }
 }

@@ -148,9 +148,4 @@ public class FirstFollowCalculator {
         }
     }
 
-    public static void main(String[] args) {
-        Grammar g = new Grammar();
-        FirstFollowCalculator calculator = new FirstFollowCalculator(g.getGrammar());
-        calculator.printFirstFollow();
-    }
 }
