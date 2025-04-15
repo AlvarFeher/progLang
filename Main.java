@@ -1,17 +1,13 @@
 import Grammar.Grammar;
-import Parser.ParseNode;
-import Parser.Parser;
 import Parser.FirstFollowCalculator;
+import Parser.InputEntry;
 import Parser.ParsingTableBuilder;
 import Parser.LL1Parser;
 import Token.LexicalAnalyzer;
 import Token.Token;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 // pasar solo 1 TOKEN, no tofo el code, el parser solo pilla 1 token
@@ -21,7 +17,7 @@ import java.util.Map;
 // guardar la grammar en un file, xml json para el first and follow
 
 public class Main {
-    public static String filepath = "Input/input1.txt";
+    public static String filepath = "Input/input2.txt";
 
     public static void main(String[] args) throws IOException {
         LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzer(filepath);
@@ -40,10 +36,10 @@ public class Main {
 
         Map<String, Map<String, List<String>>> table = builder.buildParsingTable();
         LL1Parser parser = new LL1Parser(g.getGrammar(), table);
-        List<String> input = new ArrayList<>();
+        List<InputEntry> input = new ArrayList<>();
 
         for(Token t : tokens){
-            input.add(parser.mapTokenToGrammarTerminal(t));
+            input.add(new InputEntry(t.getToken(),parser.mapTokenToGrammarTerminal(t)));
             System.out.println(input.getLast());
         }
 

@@ -2,6 +2,7 @@ package Parser;
 
 
 import Grammar.Grammar;
+import Symbols.SymnbolsTable;
 import Token.LexicalAnalyzer;
 import Token.Token;
 import Tree.TreeNode;
@@ -72,7 +73,7 @@ public class LL1Parser {
     }
 
 
-    public void parse(List<String> tokens) {
+    public void parse(List<InputEntry> tokens) {
         Stack<String> stack = new Stack<>();
         treeStack.clear();
 
@@ -82,14 +83,14 @@ public class LL1Parser {
         treeStack.push(programRoot);
         stack.push("Program");
 
-        tokens.add("$"); // End marker
+        tokens.add(new InputEntry("","$")); // End marker
         int index = 0;
 
         System.out.println("== Parsing Process ==");
 
         while (!stack.isEmpty()) {
             String top = stack.peek();
-            String currentToken = tokens.get(index);
+            String currentToken = tokens.get(index).getTerminal();
 
             System.out.println("STACK TOP: " + top + "   CURRENT TOKEN: " + currentToken);
 
@@ -99,6 +100,7 @@ public class LL1Parser {
                 if(!treeStack.isEmpty()){
                     TreeNode matchedNode = treeStack.pop();
                     matchedNode.label = currentToken;
+                    matchedNode.value = tokens.get(index).getValue();
                 }
                // Terminal value
                 index++;
@@ -163,6 +165,13 @@ public class LL1Parser {
         for (TreeNode child : node.children) {
             printTree(child, indent + 1);
         }
+    }
+
+    public void buildSymbolTable(TreeNode node, SymnbolsTable symbolsTable) {
+        if (node == null) {
+            return;
+        }
+
     }
 
 
