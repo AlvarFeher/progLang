@@ -83,8 +83,6 @@ public class ParsingTableBuilder {
     }
 
     public void printParsingTable(Map<String, Map<String, List<String>>> table) {
-
-
         System.out.println("=== LL(1) Parsing Table ===\n");
         for (String nonTerm : table.keySet()) {
             for (String terminal : table.get(nonTerm).keySet()) {

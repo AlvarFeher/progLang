@@ -3,6 +3,7 @@ import Parser.FirstFollowCalculator;
 import Parser.InputEntry;
 import Parser.ParsingTableBuilder;
 import Parser.LL1Parser;
+import Symbols.SymbolsTable;
 import Token.LexicalAnalyzer;
 import Token.Token;
 
@@ -44,6 +45,9 @@ public class Main {
         }
 
         parser.parse(input);
+        SymbolsTable symbolsTable = new SymbolsTable();
+        symbolsTable = parser.buildSymbolTable(parser.getRoot(), symbolsTable);
+        symbolsTable.printSymbolsTable();
         System.out.println();
 
     }
