@@ -34,7 +34,7 @@ public class ParsingTableBuilder {
                 }
             }
         }
-        terminals.add("$"); // End marker
+        terminals.add("$"); // end marker
         return terminals;
     }
 
@@ -81,16 +81,5 @@ public class ParsingTableBuilder {
         }
         return result;
     }
-
-    public void printParsingTable(Map<String, Map<String, List<String>>> table) {
-        System.out.println("=== LL(1) Parsing Table ===\n");
-        for (String nonTerm : table.keySet()) {
-            for (String terminal : table.get(nonTerm).keySet()) {
-                List<String> production = table.get(nonTerm).get(terminal);
-                System.out.printf("%-15s | %-10s -> %s%n", nonTerm, terminal, production);
-            }
-        }
-    }
-
 
 }

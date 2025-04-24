@@ -1,6 +1,7 @@
 package Parser;
 
 
+import Symbols.Symbol;
 import Symbols.SymbolsTable;
 import Token.Token;
 import Tree.TreeNode;
@@ -48,7 +49,7 @@ public class LL1Parser {
                     return "tipus_simple";
                 }
                 return lexeme;
-                 // e.g., FUNCIO, CONST, SI, MENTRE, INICI, FI...
+                 //FUNCIO, CONST, SI, MENTRE, INICI, FI...
             case IDENTIFIER:
                 return "ID";
             case INT_CONSTANT:
@@ -58,10 +59,10 @@ public class LL1Parser {
             case BOOL_CONSTANT:
                 return lexeme.equals("CERT") ? "CERT" : "FALS";
             case RELATIONAL_OP:
-                return "oper_rel"; // generalize all relational ops
+                return "oper_rel";
             case LOGICAL_OP:
             case ARITHMETIC_OP:
-                return lexeme; // e.g., +, -, *, /
+                return lexeme; // +, -, *, /
             case SPECIAL_SYMBOL:
                 return token.getToken(); // (, ), {, }, ;, :
             default:
@@ -77,13 +78,13 @@ public class LL1Parser {
         Stack<String> stack = new Stack<>();
         treeStack.clear();
 
-        // Set up initial stack and tree root
+        // set up initial stack and tree root
         stack.push("$");
         TreeNode programRoot = new TreeNode("Program");
         treeStack.push(programRoot);
         stack.push("Program");
 
-        tokens.add(new InputEntry("","$")); // End marker
+        tokens.add(new InputEntry("","$")); // end marker
         int index = 0;
 
         System.out.println("== Parsing Process ==");
@@ -102,7 +103,7 @@ public class LL1Parser {
                     matchedNode.label = currentToken;
                     matchedNode.value = tokens.get(index).getValue();
                 }
-               // Terminal value
+               // terminal value
                 index++;
             } else if (terminals.contains(top)) {
                 error("Unexpected token: " + currentToken + " (expected: " + top + ")");
@@ -113,7 +114,7 @@ public class LL1Parser {
                 List<String> production = parsingTable.get(top).get(currentToken);
                 System.out.println(top + " -> " + production);
 
-                TreeNode parent = treeStack.pop(); // Non-terminal node
+                TreeNode parent = treeStack.pop(); // non-terminal node
 
                 List<TreeNode> children = new ArrayList<>();
                 for (String symbol : production) {
@@ -124,7 +125,7 @@ public class LL1Parser {
                     }
                 }
 
-                // Reverse and push children to the treeStack and parse stack
+                // reverse and push children to treeStack and parse stack
                 Collections.reverse(children);
                 for (TreeNode child : children) {
                     treeStack.push(child);
@@ -136,16 +137,13 @@ public class LL1Parser {
             }
         }
         root = programRoot;
-        System.out.println("\n📦 Parse Tree:");
+        System.out.println("\nParse Tree:");
         printTree(root, 0);
 
-        // ✅ Final root assignment
         if (!treeStack.isEmpty()) {
             root = programRoot;
-            System.out.println("\n📦 Parse Tree:");
+            System.out.println("\nParse Tree:");
             printTree(root, 0);
-        } else {
-            System.err.println("Tree stack was empty! Could not build parse tree.");
         }
 
         if (index == tokens.size()) {
@@ -180,44 +178,59 @@ public class LL1Parser {
 
     public SymbolsTable buildSymbolTable(TreeNode node, SymbolsTable table) {
         if (node == null) return table;
-        System.out.println(node.label+": "+node.value);
-        // Handle variable or constant declaration
+        //System.out.println(node.label+": "+node.value);
+
+
+        // variable or constant declaration
         if (node.label.equals("Dec_Cte_Var")) {
             String type = null;
             String id = null;
+            String value = null;
 
             for (TreeNode child : node.children) {
                 if (child.label.equals("Tipus")) {
                     type = extractType(child);
                 }
+                if (child.label.equals("Const")) {
+                    type = "CONST";
+                }
                 if (child.label.equals("ID")) {
                     id = child.value;
+                }
+                if (child.label.equals("Exp")) {
+                    value = extractExpression(child);
                 }
             }
 
             if (id != null && type != null) {
-                table.addEntry(id, type, null);
+                table.addEntry(id, type, value);
             }
         }
 
-        // Handle function declaration
+
+        // function declaration
         if (node.label.equals("Dec_Fun")) {
             String functionName = null;
             String returnType = null;
+            List<String> params = new ArrayList<>();
 
             for (TreeNode child : node.children) {
                 if (child.label.equals("ID")) {
                     functionName = child.value;
                 } else if (child.label.equals("tipus_simple")) {
-                    returnType = child.children.isEmpty() ? child.value : child.children.get(0).label;
+                    returnType = extractExpression(child);
+                } else if (child.label.equals("Llista_Param")) {
+                    params.addAll(extractParams(child));
                 }
             }
 
             if (functionName != null && returnType != null) {
-                table.addEntry(functionName, "FUNCIO(" + returnType + ")", null);
+                String paramString = String.join(", ", params);
+                table.addEntry(functionName, "FUNCIO(" + returnType + ")", "(" + paramString + ")");
             }
         }
 
+        //  constants
         if (node.label.equals("Const")) {
             String id = null;
 
@@ -228,44 +241,33 @@ public class LL1Parser {
             }
 
             if (id != null) {
-                table.addEntry(id, "CONST", null);  // Type unknown until resolved
+                table.addEntry(id, "CONST", null);
             }
         }
 
-        // Handle assignments and operations
-        if (node.label.equals("Inst")) {
-            String id = null;
-            TreeNode instTail = null;
+        // assignments and operations
+        if (node.label.equals("Inst") && node.children.size() >= 2) {
+            TreeNode idNode = node.children.get(0);
+            TreeNode instTail = node.children.get(1);
 
-            for (TreeNode child : node.children) {
-                if (child.label.equals("ID")) {
-                    id = child.value;
-                } else if (child.label.equals("InstTail")) {
-                    instTail = child;
-                }
-            }
+            if (idNode.label.equals("ID") && instTail.label.equals("InstTail")) {
+                TreeNode assignOp = instTail.children.isEmpty() ? null : instTail.children.get(0);
+                TreeNode expNode = findChild(instTail, "Exp");
 
-            if (id != null && instTail != null) {
-                TreeNode firstChild = instTail.children.isEmpty() ? null : instTail.children.get(0);
+                if (assignOp != null && assignOp.label.equals("=") && expNode != null) {
+                    String id = idNode.value;
+                    String value = extractExpression(expNode);  // Use this to show `a + 1` instead of just numbers
+                    Symbol sym = table.getEntry(id);
+                    System.out.println(">> Updating variable '" + id + "' with value: " + value);
 
-                if (firstChild != null) {
-                    // Assignment
-                    if (firstChild.label.equals("=")) {
-                        TreeNode exp = findChild(instTail, "Exp");
-                        String value = extractExpressionValue(exp);
-                        table.updateValue(id, value);  // Add value to previously declared variable
-                    }
-
-                    // Function call
-                    if (firstChild.label.equals("(")) {
-                        table.updateValue(id, "CALL"); // or you can expand this to store function name, etc.
+                    if (sym != null) {
+                        sym.setValue(value);  // update the value in the symbol table
                     }
                 }
             }
         }
 
-
-        // Recurse to all children
+        // traverse to all children
         for (TreeNode child : node.children) {
             buildSymbolTable(child, table);
         }
@@ -273,6 +275,23 @@ public class LL1Parser {
         return table;
     }
 
+    private List<String> extractParams(TreeNode node) {
+        List<String> params = new ArrayList<>();
+        if (node == null) return params;
+
+        for (TreeNode child : node.children) {
+            if (child.label.equals("Parameter")) {
+                for (TreeNode grandchild : child.children) {
+                    if (grandchild.label.equals("Tipus")) {
+                        params.add(extractType(grandchild));
+                    }
+                }
+            }
+            params.addAll(extractParams(child));
+        }
+
+        return params;
+    }
 
     private TreeNode findChild(TreeNode node, String label) {
         for (TreeNode child : node.children) {
@@ -281,21 +300,26 @@ public class LL1Parser {
         return null;
     }
 
-    private String extractExpressionValue(TreeNode node) {
+    private String extractExpression(TreeNode node) {
         if (node == null) return "";
 
-        // Simple constant or identifier
-        if (node.label.equals("cte_entera") || node.label.equals("cte_cadena") || node.label.equals("ID")) {
-            return node.value;
+        // Leaf node with an actual token
+        if (node.children.isEmpty()) {
+            return node.value != null ? node.value : "";
         }
 
-        // If it's an expression subtree, concatenate its children
+        // go through children and ignore grammar rules like FactorTail, TermTail, etc..
         StringBuilder sb = new StringBuilder();
         for (TreeNode child : node.children) {
-            sb.append(extractExpressionValue(child)).append(" ");
+            String part = extractExpression(child);
+            if (!part.isEmpty()) {
+                sb.append(part).append(" ");
+            }
         }
+
         return sb.toString().trim();
     }
+
 
 
 }

@@ -3,7 +3,7 @@ SENCER fact;
 FUNCIO PRINCIPAL(): SENCER{
 
     SENCER num;
-    num = 5;
+    num = 1;
 
     ESCRIURE("Valor inicial de num: ", num);
 // sample comment

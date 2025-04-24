@@ -9,8 +9,13 @@ public class SymbolsTable {
         this.symbolsTable = new HashMap<>();
     }
 
-    public void addEntry(String type, String name, String value) {
+    public void addEntry(String name, String type, String value) {
+        System.out.println(">> Adding symbol: " + name + " | Type: " + type + " | Value: " + value);
+        if (!symbolsTable.containsKey(name)) {
             symbolsTable.put(name, new Symbol(type, name, value));
+        } else {
+            System.out.println("Symbol '" + name + "' already exists, skipping insert.");
+        }
     }
 
     public Symbol getEntry(String name) {
