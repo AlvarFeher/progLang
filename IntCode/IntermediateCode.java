@@ -21,8 +21,14 @@ public class IntermediateCode {
             case "Exp":
                  handleExpression(node);
                  break;
+            case "Dec_Fun":
+                String funcName = node.children.get(1).value;
+                emitLabel(funcName);
+                generate(node.find("Llista_inst"));
+                emit("END_FUNC", funcName, null, null);
+                return; // important: do not descend into children again
 
-                 default:
+            default:
                      for (TreeNode child : node.children) {
                          generate(child);
                      }
@@ -35,12 +41,20 @@ public class IntermediateCode {
         TreeNode first = node.children.get(0);
         if (first.label.equals("ID") && node.children.size() > 1 && node.children.get(1).label.equals("InstTail")) {
             TreeNode tail = node.children.get(1);
-            if (tail.children.size() > 2 && tail.children.get(0).label.equals("=")) {
+            if (tail.children.size() > 0 && tail.children.get(0).label.equals("=")) {
+                // assign ID = Exp;
                 String id = first.value;
                 TreeNode exp = tail.children.get(1);
+
+                //function call or expression
                 String value = evalExp(exp);
                 code.add(new Quadruple("=", value, null, id));
+            } else if (tail.children.size() > 0 && tail.children.get(0).label.equals("(")) {
+                //  function call: ID(...);
+                TreeNode args = tail.find("Llista_expressio");
+                handleFunctionCall(first.value, args); // dont assign result
             }
+
         }
 
         else if (first.label.equals("ESCRIURE")) {
@@ -140,7 +154,7 @@ public class IntermediateCode {
             String left = evalExp(expSimple);
 
             if (expRelTail != null && !expRelTail.children.isEmpty()) {
-                String relOp = expRelTail.children.get(0).value; // like ">", "=="
+                String relOp = expRelTail.children.get(0).value; // like >, ==...
                 TreeNode rightNode = expRelTail.children.get(1);
                 String right = evalExp(rightNode);
                 String temp = gen.newTemp();
@@ -166,12 +180,42 @@ public class IntermediateCode {
         }
 
         if (node.label.equals("Factor")) {
-            return evalExp(node.children.get(0));
+            TreeNode first = node.children.get(0);
+
+            if (first.label.equals("ID")) {
+                // check if its a function call
+                if (node.children.size() > 1 && node.children.get(1).label.equals("FactorTail")) {
+                    TreeNode tail = node.children.get(1);
+                    if (tail.children.size() > 0 && tail.children.get(0).label.equals("(")) {
+                        TreeNode args = tail.find("Llista_expressio");
+                        return handleFunctionCall(first.value, args);
+                    }
+                }
+                return first.value; // just an ID (variable)
+            }
+
+            return evalExp(first);
         }
 
         return null;
     }
 
+    private String handleFunctionCall(String funcName, TreeNode args) {
+        int argCount = 0;
+        if (args != null) {
+            for (TreeNode child : args.children) {
+                if (child.label.equals("Exp")) {
+                    String val = evalExp(child);
+                    code.add(new Quadruple("PARAM", val, null, null));
+                    argCount++;
+                }
+            }
+        }
+
+        String temp = gen.newTemp();
+        code.add(new Quadruple("CALL", funcName, String.valueOf(argCount), temp));
+        return temp;
+    }
 
     private String evalBinaryTail(String left, TreeNode tail) {
         if (tail == null || tail.children.isEmpty()) return left;
@@ -203,7 +247,7 @@ public class IntermediateCode {
         if (node.children.size() > 1) {
             TreeNode expSimpleTail = node.children.get(1);
             if (!expSimpleTail.children.isEmpty()) {
-                TreeNode operator = expSimpleTail.children.get(0); // + or -
+                TreeNode operator = expSimpleTail.children.get(0); // + o -
                 TreeNode rightTerm = expSimpleTail.children.get(1);
                 String right = handleTerm(rightTerm);
                 String temp = gen.newTemp();

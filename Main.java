@@ -20,7 +20,7 @@ import java.util.Map;
 // guardar la grammar en un file, xml json para el first and follow
 
 public class Main {
-    public static String filepath = "Input/input2.txt";
+    public static String filepath = "Input/input3.txt";
 
     public static void main(String[] args) throws IOException {
         LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzer(filepath);
