@@ -10,7 +10,9 @@ FUNCIO PRINCIPAL(): SENCER{
 
     SI num > 0 LLAVORS
         ESCRIURE("El número és positiu");
-    SINO
+    FISI;
+
+    SI num < 0 LLAVORS
         ESCRIURE("El número és zero o negatiu");
     FISI;
 
@@ -28,14 +30,19 @@ FUNCIO PRINCIPAL(): SENCER{
 FUNCIO FACTORIAL(SENCER n): SENCER {
     SENCER resultat;
     resultat = 1;
-// sample comment
-    REPETIR
+    // sample comment
+
+    resultat = resultat * n;
+    n = n - 1;
+
+    MENTRE n != 0 FER
         resultat = resultat * n;
         n = n - 1;
-    FINS n == 0;
+    FIMENTRE;
 
     RETORNAR resultat;
 };
+
 SENCER a;
 INICI
     a = 1;

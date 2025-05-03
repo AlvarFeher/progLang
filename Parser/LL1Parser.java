@@ -308,7 +308,7 @@ public class LL1Parser {
             return node.value != null ? node.value : "";
         }
 
-        // go through children and ignore grammar rules like FactorTail, TermTail, etc..
+        // go through children
         StringBuilder sb = new StringBuilder();
         for (TreeNode child : node.children) {
             String part = extractExpression(child);

@@ -35,5 +35,15 @@ public class TreeNode {
         return sb.toString();
     }
 
+    public TreeNode find(String label) {
+        for (TreeNode child : children) {
+            if (child.label != null && child.label.equals(label)) {
+                return child;
+            }
+        }
+        return null;
+    }
+
+
 
 }

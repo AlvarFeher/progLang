@@ -1,4 +1,6 @@
 import Grammar.Grammar;
+import IntCode.IntermediateCode;
+import IntCode.Quadruple;
 import Parser.FirstFollowCalculator;
 import Parser.InputEntry;
 import Parser.ParsingTableBuilder;
@@ -18,7 +20,7 @@ import java.util.Map;
 // guardar la grammar en un file, xml json para el first and follow
 
 public class Main {
-    public static String filepath = "Input/input1.txt";
+    public static String filepath = "Input/input2.txt";
 
     public static void main(String[] args) throws IOException {
         LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzer(filepath);
@@ -48,6 +50,13 @@ public class Main {
         SymbolsTable symbolsTable = new SymbolsTable();
         symbolsTable = parser.buildSymbolTable(parser.getRoot(), symbolsTable);
         symbolsTable.printSymbolsTable();
+
+        IntermediateCode intermediateCode = new IntermediateCode();
+        intermediateCode.generate(parser.getRoot());
+        System.out.println("INTERMEDIATE CODE");
+        for(Quadruple q : intermediateCode.getCode()){
+            System.out.println(q);
+        }
         System.out.println();
 
     }
