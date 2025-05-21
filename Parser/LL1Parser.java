@@ -86,8 +86,9 @@ public class LL1Parser {
 
         tokens.add(new InputEntry("","$")); // end marker
         int index = 0;
-
-        System.out.println("== Parsing Process ==");
+        System.out.println("*******************************");
+        System.out.println("Parsing Process");
+        System.out.println("*******************************");
 
         while (!stack.isEmpty()) {
             String top = stack.peek();
@@ -166,14 +167,17 @@ public class LL1Parser {
     }
 
     private String extractType(TreeNode node) {
-        for(TreeNode child : node.children ) {
+        for (TreeNode child : node.children) {
             if (child.label.equals("tipus_simple")) {
-                return child.children.isEmpty() ? child.value : child.children.get(0).label;
+                if (!child.children.isEmpty()) {
+                    return child.children.get(0).label;
+                } else {
+                    return child.label;
+                }
             }
         }
         return null;
     }
-
 
 
     public SymbolsTable buildSymbolTable(TreeNode node, SymbolsTable table) {
@@ -203,7 +207,7 @@ public class LL1Parser {
             }
 
             if (id != null && type != null) {
-                table.addEntry(id, type, value);
+                table.addEntry(id, type, value,null);
             }
         }
 
@@ -226,7 +230,7 @@ public class LL1Parser {
 
             if (functionName != null && returnType != null) {
                 String paramString = String.join(", ", params);
-                table.addEntry(functionName, "FUNCIO(" + returnType + ")", "(" + paramString + ")");
+                table.addEntry(functionName, "FUNCIO(" + returnType + ")", "(" + paramString + ")", params);
             }
         }
 
@@ -241,7 +245,7 @@ public class LL1Parser {
             }
 
             if (id != null) {
-                table.addEntry(id, "CONST", null);
+                table.addEntry(id, "CONST", null,null);
             }
         }
 
@@ -266,32 +270,34 @@ public class LL1Parser {
                 }
             }
         }
-
         // traverse to all children
         for (TreeNode child : node.children) {
             buildSymbolTable(child, table);
         }
-
         return table;
     }
 
     private List<String> extractParams(TreeNode node) {
         List<String> params = new ArrayList<>();
-        if (node == null) return params;
+
+        if (node == null || !node.label.equals("Llista_Param")) return params;
 
         for (TreeNode child : node.children) {
             if (child.label.equals("Parameter")) {
-                for (TreeNode grandchild : child.children) {
-                    if (grandchild.label.equals("Tipus")) {
-                        params.add(extractType(grandchild));
+                TreeNode tipus = child.find("Tipus");
+                if (tipus != null) {
+                    String type = extractType(tipus);
+                    if (type != null) {
+                        params.add(type);
                     }
                 }
             }
-            params.addAll(extractParams(child));
         }
 
         return params;
     }
+
+
 
     private TreeNode findChild(TreeNode node, String label) {
         for (TreeNode child : node.children) {

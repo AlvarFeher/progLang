@@ -29,7 +29,8 @@ FUNCIO PRINCIPAL(): SENCER{
 
 FUNCIO FACTORIAL(SENCER n): SENCER {
     SENCER resultat;
-    resultat = 1;
+
+    resultat = "hola";
     // sample comment
 
     resultat = resultat * n;

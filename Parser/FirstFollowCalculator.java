@@ -115,12 +115,12 @@ public class FirstFollowCalculator {
                                 }
                             }
 
-// Apply FIRST(β) to FOLLOW(B)
+
                             if (followSets.get(B).addAll(firstBeta)) {
                                 changed = true;
                             }
 
-// Apply FOLLOW(A) if all after B are null OR B is at end
+                            // apply FOLLOW(A) if all after B are null OR B is at end
                             if (epsilonInAll || i == production.size() - 1) {
                                 if (followSets.get(B).addAll(followSets.get(A))) {
                                     System.out.println("FOLLOW(" + B + ") gets FOLLOW(" + A + ") = " + followSets.get(A));

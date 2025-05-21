@@ -5,6 +5,7 @@ import Parser.FirstFollowCalculator;
 import Parser.InputEntry;
 import Parser.ParsingTableBuilder;
 import Parser.LL1Parser;
+import Semantics.SemanticCheck;
 import Symbols.SymbolsTable;
 import Token.LexicalAnalyzer;
 import Token.Token;
@@ -20,7 +21,7 @@ import java.util.Map;
 // guardar la grammar en un file, xml json para el first and follow
 
 public class Main {
-    public static String filepath = "Input/input3.txt";
+    public static String filepath = "Input/input2.txt";
 
     public static void main(String[] args) throws IOException {
         LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzer(filepath);
@@ -50,6 +51,11 @@ public class Main {
         SymbolsTable symbolsTable = new SymbolsTable();
         symbolsTable = parser.buildSymbolTable(parser.getRoot(), symbolsTable);
         symbolsTable.printSymbolsTable();
+
+        // semantics
+        SemanticCheck semanticCheck = new SemanticCheck(symbolsTable);
+        semanticCheck.analyze(parser.getRoot());
+        semanticCheck.printErrors();
 
         IntermediateCode intermediateCode = new IntermediateCode();
         intermediateCode.generate(parser.getRoot());

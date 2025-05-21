@@ -2,7 +2,8 @@ FUNCIO PRINCIPAL(SENCER a): SENCER{
     SENCER resultat;
     SI a == 1 LLAVORS
         resultat = a + 1;
-    SINO
+    FISI;
+    SI a == 0 LLAVORS
         ESCRIURE("resultat es 0");
         resultat = 0;
     FISI;

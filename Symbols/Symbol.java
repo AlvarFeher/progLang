@@ -1,14 +1,29 @@
 package Symbols;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Symbol {
     private String type;
     private String name;
     private String value;
+    private List<String> params;
 
     public Symbol(String type, String name, String value) {
         this.type = type;
         this.name = name;
         this.value = value;
+    }
+
+    public Symbol(String type, String name, String value, List<String> params) {
+        this.type = type;
+        this.name = name;
+        this.value = value;
+        this.params = params;
+    }
+
+    public List<String> getParams() {
+        return params;
     }
 
     public void setType(String type) {

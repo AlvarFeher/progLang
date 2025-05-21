@@ -1,5 +1,6 @@
 package Symbols;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SymbolsTable {
@@ -9,13 +10,20 @@ public class SymbolsTable {
         this.symbolsTable = new HashMap<>();
     }
 
-    public void addEntry(String name, String type, String value) {
+    public void addEntry(String name, String type, String value, List<String> params) {
         System.out.println(">> Adding symbol: " + name + " | Type: " + type + " | Value: " + value);
         if (!symbolsTable.containsKey(name)) {
             symbolsTable.put(name, new Symbol(type, name, value));
         } else {
             System.out.println("Symbol '" + name + "' already exists, skipping insert.");
         }
+    }
+
+    public String getType(String name) {
+        if(symbolsTable.get(name) ==null || symbolsTable.get(name).getType()==null){
+            return "UNKNOWN";
+        }
+        return symbolsTable.get(name).getType();
     }
 
     public Symbol getEntry(String name) {
@@ -27,6 +35,15 @@ public class SymbolsTable {
             entry.setValue(value);
         }
     }
+
+    public List<String> getFunctionParams(String name) {
+        Symbol sym = symbolsTable.get(name);
+        if (sym != null && sym.getParams() != null) {
+            return sym.getParams();
+        }
+        return List.of();  // or null
+    }
+
 
     public void printSymbolsTable() {
         System.out.println("PRINTING SYMBOLS TABLE");
