@@ -68,7 +68,7 @@ public class SemanticCheck {
             if ("(".equals(tailNode.children.get(0).label)) {
                 checkFunctionCall(idNode.value, tailNode);
             } else {
-                checkAssignment(node);
+               // checkAssignment(node);
             }
         }
         for (TreeNode child : node.children) {

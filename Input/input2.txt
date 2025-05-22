@@ -6,5 +6,5 @@ FUNCIO PRINCIPAL(SENCER a): SENCER{
 SENCER a;
 INICI
     a = 1;
-    PRINCIPAL(a);
+    PRINCIPAL(a,b);
 FI

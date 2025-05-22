@@ -279,8 +279,7 @@ public class LL1Parser {
 
     private List<String> extractParams(TreeNode node) {
         List<String> params = new ArrayList<>();
-
-        if (node == null || !node.label.equals("Llista_Param")) return params;
+        if (node == null) return params;
 
         for (TreeNode child : node.children) {
             if (child.label.equals("Parameter")) {
@@ -292,6 +291,8 @@ public class LL1Parser {
                     }
                 }
             }
+            // Recurse in case parameters are nested inside ParamListTail etc.
+            params.addAll(extractParams(child));
         }
 
         return params;
