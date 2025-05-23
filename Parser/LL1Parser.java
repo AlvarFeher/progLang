@@ -172,7 +172,7 @@ public class LL1Parser {
                 if (!child.children.isEmpty()) {
                     return child.children.get(0).label;
                 } else {
-                    return child.label;
+                    return child.value;
                 }
             }
         }
@@ -216,22 +216,26 @@ public class LL1Parser {
         if (node.label.equals("Dec_Fun")) {
             String functionName = null;
             String returnType = null;
-            List<String> params = new ArrayList<>();
-
+            Map<String, String> paramMap = new LinkedHashMap<>();
             for (TreeNode child : node.children) {
                 if (child.label.equals("ID")) {
                     functionName = child.value;
                 } else if (child.label.equals("tipus_simple")) {
                     returnType = extractExpression(child);
                 } else if (child.label.equals("Llista_Param")) {
-                    params.addAll(extractParams(child));
+                    paramMap = extractParams(child);  // now names + types
                 }
             }
 
-            if (functionName != null && returnType != null) {
-                String paramString = String.join(", ", params);
-                table.addEntry(functionName, "FUNCIO(" + returnType + ")", "(" + paramString + ")", params);
+            List<String> paramTypes = new ArrayList<>(paramMap.values());
+            table.addEntry(functionName, "FUNCIO(" + returnType + ")", "(" + String.join(", ", paramTypes) + ")", paramTypes);
+            for (Map.Entry<String, String> entry : paramMap.entrySet()) {
+                String paramName = entry.getKey();
+                String paramType = entry.getValue();
+                table.addEntry(paramName, paramType, null, null);
+                System.out.println(">> Adding function parameter: " + paramName + " of type " + paramType);
             }
+
         }
 
         //  constants
@@ -277,26 +281,32 @@ public class LL1Parser {
         return table;
     }
 
-    private List<String> extractParams(TreeNode node) {
-        List<String> params = new ArrayList<>();
-        if (node == null) return params;
+    private Map<String, String> extractParams(TreeNode node) {
+        Map<String, String> paramMap = new LinkedHashMap<>(); // maintain order
+
+        if (node == null) return paramMap;
 
         for (TreeNode child : node.children) {
             if (child.label.equals("Parameter")) {
                 TreeNode tipus = child.find("Tipus");
-                if (tipus != null) {
+                TreeNode idNode = child.find("ID");
+
+                if (tipus != null && idNode != null) {
                     String type = extractType(tipus);
-                    if (type != null) {
-                        params.add(type);
+                    String name = idNode.value;
+                    if (type != null && name != null) {
+                        paramMap.put(name, type);
                     }
                 }
             }
-            // Recurse in case parameters are nested inside ParamListTail etc.
-            params.addAll(extractParams(child));
+
+            // Recursively check nested param tail
+            paramMap.putAll(extractParams(child));
         }
 
-        return params;
+        return paramMap;
     }
+
 
 
 

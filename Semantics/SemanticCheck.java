@@ -28,53 +28,44 @@ public class SemanticCheck {
         System.out.println(ANSI_RESET);
     }
 
-    private String inferType(TreeNode node) {
-        if (node == null) return "UNKNOWN";
-
-        if (node.label.equals("cte_entera")) return "SENCER";
-        if (node.label.equals("cte_cadena")) return "CADENA";  // define your types
-        if (node.label.equals("CERT") || node.label.equals("FALS")) return "LOGIC";
-        if (node.label.equals("ID")) return symbolsTable.getType(node.value);
-
-        // recursively walk Exp -> ExpSimple -> Term -> Factor
-        TreeNode childExp = node.find("ExpSimple");
-        if (childExp != null) return inferType(childExp);
-
-        TreeNode term = node.find("Term");
-        if (term != null) return inferType(term);
-
-        TreeNode factor = node.find("Factor");
-        if (factor != null) return inferType(factor.children.get(0));
-
-        return "UNKNOWN";
-    }
-
     private void checkNode(TreeNode node) {
-        switch(node.label){
-            case "Inst":
-                //checkAssignment(node);
-                break;
-            case "Exp":
-                //checkExpression(node, symbolsTable);
-                break;
-            case "FuncCall":
-                //checkFunctionCall(node);
-                break;
-
-        }
         if ("Inst".equals(node.label) && node.children.size() >= 2) {
             TreeNode idNode = node.children.get(0);
             TreeNode tailNode = node.children.get(1);
-            if ("(".equals(tailNode.children.get(0).label)) {
+
+            if (!tailNode.children.isEmpty() && "(".equals(tailNode.children.get(0).label)) {
                 checkFunctionCall(idNode.value, tailNode);
             } else {
-               // checkAssignment(node);
+                checkAssignment(node);
             }
+        }
+
+        if(node.label.equals("ExpSimple")) {
+
         }
         for (TreeNode child : node.children) {
             checkNode(child);
         }
     }
+
+    private void checkAssignment(TreeNode node) {
+        if (node.children.size() < 2 || !node.children.get(1).label.equals("InstTail")) return;
+
+        TreeNode idNode = node.children.get(0);
+        TreeNode tail = node.children.get(1);
+        if (tail.children.size() < 3) return;
+
+        TreeNode expr = tail.children.get(1);  // = Exp ;
+
+        String varName = idNode.value;
+        String expectedType = symbolsTable.getType(varName);
+        String exprType = checkExpression(expr, symbolsTable);
+
+        if (!expectedType.equals(exprType)) {
+            errors.add("Type mismatch: variable '" + varName + "' expects " + expectedType + " but got " + exprType);
+        }
+    }
+
     private void checkFunctionCall(String funcName, TreeNode instTailNode) {
         List<String> expectedParams = symbolsTable.getFunctionParams(funcName);
 
@@ -83,7 +74,6 @@ public class SemanticCheck {
             return;
         }
 
-        // Extract actual arguments from instTailNode (should be: (, Llista_expressio, ), ;)
         TreeNode exprListNode = instTailNode.find("Llista_expressio");
         if (exprListNode == null) {
             errors.add("Cannot find parameter list in call to '" + funcName + "'");
@@ -106,6 +96,27 @@ public class SemanticCheck {
             }
         }
     }
+
+    private String inferType(TreeNode node) {
+        if (node == null) return "UNKNOWN";
+
+        switch (node.label) {
+            case "cte_entera": return "SENCER";
+            case "cte_cadena": return "CADENA";
+            case "CERT":
+            case "FALS": return "LOGIC";
+            case "ID": return symbolsTable.getType(node.value);
+        }
+
+        for (TreeNode child : node.children) {
+            String childType = inferType(child);
+            if (!childType.equals("UNKNOWN")) return childType;
+        }
+
+        return "UNKNOWN";
+    }
+
+
     private List<String> extractArgs(TreeNode llistaNode) {
         List<String> types = new ArrayList<>();
         if (llistaNode == null) return types;
@@ -126,50 +137,6 @@ public class SemanticCheck {
         }
 
         return types;
-    }
-
-
-    private void checkAssignment(TreeNode node) {
-        if (node.children.size() < 2 || !node.children.get(1).label.equals("InstTail")) return;
-
-        TreeNode idNode = node.children.get(0);
-        TreeNode tail = node.children.get(1);
-        if (tail.children.size() < 3) return;
-
-        TreeNode expr = tail.children.get(1);
-
-        String varName = idNode.value;
-        String expectedType = symbolsTable.getType(varName); // from symbol table
-        String exprType = inferType(expr); // your own method to infer type
-
-        if (!expectedType.equals(exprType)) {
-            errors.add("Type mismatch: variable '" + varName + "' expects " + expectedType + " but got " + exprType);
-        }
-    }
-
-    private String checkBinaryTail(String leftType, TreeNode tail, SymbolsTable table) {
-        if (tail == null || tail.children.isEmpty()) return leftType;
-
-        String op = tail.children.get(0).label;
-        TreeNode rightNode = tail.children.get(1);
-        String rightType = checkExpression(rightNode, table);
-
-        if (!leftType.equals(rightType)) {
-            System.err.printf("❌ Type mismatch in operation %s: %s %s %s\n", op, leftType, op, rightType);
-            return "ERROR";
-        }
-
-        // Example: +, -, *, / → allowed only for SENCER
-        if ("+".equals(op) || "-".equals(op) || "*".equals(op) || "/".equals(op)) {
-            if (!leftType.equals("SENCER")) {
-                System.err.printf("❌ Invalid operand type for arithmetic op '%s': %s\n", op, leftType);
-                return "ERROR";
-            }
-        }
-
-        // Proceed to next part of the chain
-        TreeNode nextTail = tail.children.size() > 2 ? tail.children.get(2) : null;
-        return checkBinaryTail(leftType, nextTail, table);
     }
 
     public String checkExpression(TreeNode node, SymbolsTable table) {
@@ -209,15 +176,46 @@ public class SemanticCheck {
             }
 
             case "Factor": {
-                if (node.children.size() == 1) {
-                    return checkExpression(node.children.get(0), table);
+                for (TreeNode child : node.children) {
+                    String type = checkExpression(child, table);
+                    if (!type.equals("UNKNOWN")) return type;
                 }
                 return "UNKNOWN";
             }
+
 
             default:
                 return "UNKNOWN";
         }
     }
+
+    private String checkBinaryTail(String leftType, TreeNode tail, SymbolsTable table) {
+        if (tail == null || tail.children.isEmpty()) return leftType;
+
+        String op = tail.children.get(0).label;
+        TreeNode rightNode = tail.children.get(1);
+        String rightType = checkExpression(rightNode, table);
+
+        System.out.println("Checking: " + leftType + " " + op + " " + rightType);
+
+        if (!leftType.equals(rightType)) {
+            errors.add("Type mismatch in operation: " + leftType + " " + op + " " + rightType);
+            return "ERROR";
+        }
+
+        if (List.of("+", "-", "*", "/").contains(op)) {
+            if (!leftType.equals("SENCER")) {
+                errors.add("Invalid operand type for arithmetic op '" + op + "': " + leftType);
+                return "ERROR";
+            }
+        }
+
+        TreeNode nextTail = tail.children.size() > 2 ? tail.children.get(2) : null;
+        return checkBinaryTail(leftType, nextTail, table);
+    }
+
+
+
+
 
 }

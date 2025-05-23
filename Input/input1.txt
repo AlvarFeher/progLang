@@ -1,5 +1,23 @@
 // sample code
 SENCER fact;
+
+FUNCIO FACTORIAL(SENCER n): SENCER {
+    SENCER resultat;
+
+    resultat = 1;
+    // sample comment
+
+    resultat = resultat * n;
+    n = n - 1;
+
+    MENTRE n != 0 FER
+        resultat = resultat * n;
+        n = n - 1;
+    FIMENTRE;
+
+    RETORNAR resultat;
+};
+
 FUNCIO PRINCIPAL(): SENCER{
 
     SENCER num;
@@ -27,22 +45,7 @@ FUNCIO PRINCIPAL(): SENCER{
     ESCRIURE("Factorial de 5: ", fact);
 };
 
-FUNCIO FACTORIAL(SENCER n): SENCER {
-    SENCER resultat;
 
-    resultat = "hola";
-    // sample comment
-
-    resultat = resultat * n;
-    n = n - 1;
-
-    MENTRE n != 0 FER
-        resultat = resultat * n;
-        n = n - 1;
-    FIMENTRE;
-
-    RETORNAR resultat;
-};
 
 SENCER a;
 INICI
