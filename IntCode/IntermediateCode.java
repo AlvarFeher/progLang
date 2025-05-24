@@ -23,9 +23,9 @@ public class IntermediateCode {
                  break;
             case "Dec_Fun":
                 String funcName = node.children.get(1).value;
-                emitLabel(funcName);
+                addLabel(funcName);
                 generate(node.find("Llista_inst"));
-                emit("END_FUNC", funcName, null, null);
+                add("END_FUNC", funcName, null, null);
                 return; // important: do not descend into children again
 
             default:
@@ -72,16 +72,16 @@ public class IntermediateCode {
             String labelElse = gen.newLabel();
             String labelEnd = gen.newLabel();
 
-            emit("IFZ", condTemp, null, labelElse);
+            add("IFZ", condTemp, null, labelElse);
             generate(thenBlock);
 
             if (elseBlock != null) {
-                emit("GOTO", null, null, labelEnd); // skip else block
-                emitLabel(labelElse);
+                add("GOTO", null, null, labelEnd); // skip else block
+                addLabel(labelElse);
                 generate(elseBlock);
-                emitLabel(labelEnd);
+                addLabel(labelEnd);
             } else {
-                emitLabel(labelElse); // no else, jump here directly
+                addLabel(labelElse); // no else, jump here directly
             }
         }
 
@@ -89,33 +89,34 @@ public class IntermediateCode {
             String labelStart = gen.newLabel();
             String labelEnd = gen.newLabel();
 
-            emitLabel(labelStart);
+            addLabel(labelStart);
 
             TreeNode cond = node.find("Exp");
             String condTemp = evalExp(cond);
-            emit("IFZ", condTemp, null, labelEnd);
+            add("IFZ", condTemp, null, labelEnd);
 
             TreeNode body = node.find("Llista_inst");
             generate(body);
 
-            emit("GOTO", null, null, labelStart);
-            emitLabel(labelEnd);
+            add("GOTO", null, null, labelStart);
+            addLabel(labelEnd);
         }
         else if (first.label.equals("RETORNAR")) {
             TreeNode exp = node.find("Exp");
             String value = evalExp(exp);
-            emit("RETURN", value, null, null);
+            add("RETURN", value, null, null);
         }
 
     }
 
-    private void emit(String op, String arg1, String arg2, String result) {
+    private void add(String op, String arg1, String arg2, String result) {
         code.add(new Quadruple(op, arg1, arg2, result));
     }
 
-    private void emitLabel(String label) {
+    private void addLabel(String label) {
         code.add(new Quadruple("LABEL", label, null, null));
     }
+
 
 
     private void handlePrint(TreeNode list) {
