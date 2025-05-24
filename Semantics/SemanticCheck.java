@@ -19,6 +19,7 @@ public class SemanticCheck {
     public void analyze(TreeNode root) {
         checkNode(root);
     }
+
     public void printErrors() {
         System.out.println(ANSI_RED+"ERRORS:");
 
@@ -28,6 +29,7 @@ public class SemanticCheck {
         System.out.println(ANSI_RESET);
     }
 
+    // check if the node is an instruction and goes over its children, check if itu is a function or an assignment
     private void checkNode(TreeNode node) {
         if ("Inst".equals(node.label) && node.children.size() >= 2) {
             TreeNode idNode = node.children.get(0);
@@ -97,35 +99,35 @@ public class SemanticCheck {
         }
     }
 
-    private String inferType(TreeNode node) {
+    private String findDataType(TreeNode node) {
         if (node == null) return "UNKNOWN";
 
         switch (node.label) {
             case "cte_entera": return "SENCER";
             case "cte_cadena": return "CADENA";
-            case "CERT":
+            case "CERT": return "LOGIC";
             case "FALS": return "LOGIC";
             case "ID": return symbolsTable.getType(node.value);
         }
 
         for (TreeNode child : node.children) {
-            String childType = inferType(child);
+            String childType = findDataType(child);
             if (!childType.equals("UNKNOWN")) return childType;
         }
 
         return "UNKNOWN";
     }
 
-
-    private List<String> extractArgs(TreeNode llistaNode) {
+// get the list of arguments of a function
+    private List<String> extractArgs(TreeNode node) {
         List<String> types = new ArrayList<>();
-        if (llistaNode == null) return types;
+        if (node == null) return types;
 
-        TreeNode current = llistaNode;
+        TreeNode current = node;
         while (current != null) {
             TreeNode exp = current.find("Exp");
             if (exp != null) {
-                types.add(inferType(exp));
+                types.add(findDataType(exp));
             }
 
             current = current.find("Llista_expressio_tail");
@@ -189,6 +191,7 @@ public class SemanticCheck {
         }
     }
 
+    // check that when doing an operation both types match each other SENCER = SENCER + SENCER
     private String checkBinaryTail(String leftType, TreeNode tail, SymbolsTable table) {
         if (tail == null || tail.children.isEmpty()) return leftType;
 
@@ -213,9 +216,5 @@ public class SemanticCheck {
         TreeNode nextTail = tail.children.size() > 2 ? tail.children.get(2) : null;
         return checkBinaryTail(leftType, nextTail, table);
     }
-
-
-
-
 
 }

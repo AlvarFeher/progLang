@@ -281,6 +281,7 @@ public class LL1Parser {
         return table;
     }
 
+    // extract the params from a function to add them to the symbols table for semantic checks
     private Map<String, String> extractParams(TreeNode node) {
         Map<String, String> paramMap = new LinkedHashMap<>(); // maintain order
 
