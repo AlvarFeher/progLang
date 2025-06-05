@@ -9,7 +9,7 @@ import Semantics.SemanticCheck;
 import Symbols.SymbolsTable;
 import Token.LexicalAnalyzer;
 import Token.Token;
-
+import Token.TokenType;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +21,7 @@ import java.util.Map;
 // guardar la grammar en un file, xml json para el first and follow
 
 public class Main {
-    public static String filepath = "Input/input1.txt";
+    public static String filepath = "Input/lexicalError.txt";
 
     public static void main(String[] args) throws IOException {
         LexicalAnalyzer lexicalAnalyzer = new LexicalAnalyzer(filepath);
@@ -34,12 +34,17 @@ public class Main {
                 calc.firstSets,
                 calc.followSets
         );
-        while((token = lexicalAnalyzer.nextToken()) != null){
-            tokens.add(token);
+        while ((token = lexicalAnalyzer.nextToken()) != null) {
+            if (token.getTokenType() == TokenType.ERROR) {
+                System.err.println("Lexical Error: Invalid token '" + token.getToken() + "'");
+            } else {
+                tokens.add(token);
+            }
         }
 
+
         Map<String, Map<String, List<String>>> table = builder.buildParsingTable();
-        LL1Parser parser = new LL1Parser(g.getGrammar(), table);
+        LL1Parser parser = new LL1Parser(g.getGrammar(), table, calc.followSets);
         List<InputEntry> input = new ArrayList<>();
 
         for(Token t : tokens){
@@ -57,13 +62,16 @@ public class Main {
         semanticCheck.analyze(parser.getRoot());
         semanticCheck.printErrors();
 
-        IntermediateCode intermediateCode = new IntermediateCode();
-        intermediateCode.generate(parser.getRoot());
-        System.out.println("INTERMEDIATE CODE");
-        for(Quadruple q : intermediateCode.getCode()){
-            System.out.println(q);
+        if(!semanticCheck.hasErrors()){
+            IntermediateCode intermediateCode = new IntermediateCode();
+            intermediateCode.generate(parser.getRoot());
+            System.out.println("INTERMEDIATE CODE");
+            for(Quadruple q : intermediateCode.getCode()){
+                System.out.println(q);
+            }
+            System.out.println();
         }
-        System.out.println();
+
 
     }
 }

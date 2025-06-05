@@ -4,11 +4,12 @@ SENCER fact;
 FUNCIO FACTORIAL(SENCER n): SENCER {
     SENCER resultat;
 
-    resultat = 1;
+    resultat = ;
+
     // sample comment
 
     resultat = resultat * n;
-    n = n - 1;
+    n = n - 1
 
     MENTRE n != 0 FER
         resultat = resultat * n;

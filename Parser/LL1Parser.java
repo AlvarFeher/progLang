@@ -13,17 +13,20 @@ public class LL1Parser {
     private final Map<String, List<List<String>>> grammar;
     private final Map<String, Map<String, List<String>>> parsingTable;
     private final Set<String> terminals;
-
+    private final Map<String, Set<String>> followSet;
     // Tree Stack
     private final Stack<TreeNode> treeStack;
     private TreeNode root = null;
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_RESET = "\u001B[0m";
 
     public LL1Parser(Map<String, List<List<String>>> grammar,
-                     Map<String, Map<String, List<String>>> parsingTable) {
+                     Map<String, Map<String, List<String>>> parsingTable, Map<String, Set<String>> followSet) {
         this.grammar = grammar;
         this.parsingTable = parsingTable;
         this.terminals = computeTerminals();
         treeStack = new Stack<>();
+        this.followSet = followSet;
     }
 
     private Set<String> computeTerminals() {
@@ -106,9 +109,20 @@ public class LL1Parser {
                 }
                // terminal value
                 index++;
-            } else if (terminals.contains(top)) {
-                error("Unexpected token: " + currentToken + " (expected: " + top + ")");
-                return;
+            }  else if (terminals.contains(top)) {
+            error("Unexpected token: " + currentToken + " (expected: " + top + "), skipping token.");
+
+            // add an error node to preserve AST structure
+            if (!treeStack.isEmpty()) {
+                TreeNode errorNode = treeStack.pop();
+                errorNode.label = "[ERROR]";
+                errorNode.value = "expected: " + top;
+                System.err.println(ANSI_RED + "Added error node: " + errorNode.label + " -> " + errorNode.value + ANSI_RESET);
+            }
+
+                stack.pop();
+                continue;
+
             } else if (parsingTable.containsKey(top) && parsingTable.get(top).containsKey(currentToken)) {
                 stack.pop();
 
@@ -132,10 +146,29 @@ public class LL1Parser {
                     treeStack.push(child);
                     stack.push(child.label);
                 }
-            } else {
-                error("No rule for [" + top + ", " + currentToken + "]");
-                return;
+             }
+        else {
+                System.err.println("Syntax error at token: " + currentToken + ", expected: " + top);
+                Set<String> follow = followSet.get(top);
+
+                // skip tokens until a token in FOLLOW(top)
+                while (!follow.contains(currentToken) && !currentToken.equals("$")) {
+                    index++;
+                    if (index >= tokens.size()) break;
+                    currentToken = tokens.get(index).getTerminal();
+                }
+
+                // try to pop the non-terminal and continue
+                stack.pop();
+                if (!treeStack.isEmpty()) {
+                    TreeNode skipped = treeStack.pop();
+                    skipped.label = "[ERROR]";
+                    skipped.value = "recovered";
+                    System.err.println(ANSI_RED + "Skipped non-terminal: " + top + " after syncing" + ANSI_RESET);
+                }
+
             }
+
         }
         root = programRoot;
         System.out.println("\nParse Tree:");
@@ -181,7 +214,7 @@ public class LL1Parser {
 
 
     public SymbolsTable buildSymbolTable(TreeNode node, SymbolsTable table) {
-        if (node == null) return table;
+        if (node == null || node.label == null || "ERROR".equals(node.label)) return table;
         //System.out.println(node.label+": "+node.value);
 
 

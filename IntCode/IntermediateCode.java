@@ -14,6 +14,7 @@ public class IntermediateCode {
     }
 
     public void generate(TreeNode node) {
+        if (node == null) return;
         switch (node.label) {
             case "Inst":
                  handleInstruction(node);

@@ -59,18 +59,21 @@ public class LexicalAnalyzer {
             }
 
             // Constant cadena: "khsdbvfks" (only to print!!)
-            if(curr == '"'){
+            if (curr == '"') {
                 pos++;
                 StringBuilder sb = new StringBuilder();
-                while(pos < len && content.charAt(pos) != '"'){
+                while (pos < len && content.charAt(pos) != '"') {
                     sb.append(content.charAt(pos));
                     pos++;
                 }
-                if(pos < len && content.charAt(pos) == '"'){ // skip closing "
+                if (pos < len && content.charAt(pos) == '"') {
                     pos++;
+                    tokens.add(new Token(TokenType.STRING_CONSTANT, sb.toString()));
+                    return new Token(TokenType.STRING_CONSTANT, sb.toString());
+                } else {
+                    System.err.println("Lexical Error: Unterminated string constant");
+                    return new Token(TokenType.ERROR, sb.toString());
                 }
-                tokens.add(new Token(TokenType.STRING_CONSTANT, sb.toString()));
-                return new Token(TokenType.STRING_CONSTANT, sb.toString());
             }
 
             // Identifier: "test7_Test" for example
@@ -164,7 +167,10 @@ public class LexicalAnalyzer {
 
             }
 
+            System.err.println("Lexical Error: Unrecognized character '" + curr + "' at position " + pos);
             pos++;
+            return new Token(TokenType.ERROR, String.valueOf(curr));
+
         }
         return null;
     }

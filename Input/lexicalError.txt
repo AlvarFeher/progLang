@@ -1,0 +1,12 @@
+SENCER x@    // invalid character '@'
+
+"unterminated string   // missing closing quote
+
+FUNCION main() {
+    123abc;             // wrong identifier
+    x = 5;
+    y = 10;
+    €money = 100;       // invalid character €
+    !wrongToken;        // unrecognized token '!'
+}
+

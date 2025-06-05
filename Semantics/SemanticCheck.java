@@ -19,9 +19,14 @@ public class SemanticCheck {
     public void analyze(TreeNode root) {
         checkNode(root);
     }
-
+    public boolean hasErrors() {
+        if (errors.size() > 0) {
+            return true;
+        }
+        return false;
+    }
     public void printErrors() {
-        System.out.println(ANSI_RED+"ERRORS:");
+        System.out.println(ANSI_RED+"SEMANTIC ERRORS:");
 
         for (String error : errors) {
             System.out.println(error);
@@ -31,6 +36,7 @@ public class SemanticCheck {
 
     // check if the node is an instruction and goes over its children, check if itu is a function or an assignment
     private void checkNode(TreeNode node) {
+        if (node == null) return;
         if ("Inst".equals(node.label) && node.children.size() >= 2) {
             TreeNode idNode = node.children.get(0);
             TreeNode tailNode = node.children.get(1);
