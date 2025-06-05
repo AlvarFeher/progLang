@@ -184,13 +184,36 @@ public class SemanticCheck {
             }
 
             case "Factor": {
+                if (node.children.size() >= 3) {
+                    TreeNode first = node.children.get(0);
+                    TreeNode second = node.children.get(1);
+
+                    // Detect function call pattern: ID ( Llista_expressio )
+                    if ("ID".equals(first.label) && "(".equals(second.label)) {
+                        String funcName = first.value;
+
+                        String fullType = table.getType(funcName);
+                        if (fullType != null && fullType.startsWith("FUNCIO(")) {
+                            int start = fullType.indexOf('(');
+                            int end = fullType.indexOf(')', start);
+                            if (start != -1 && end != -1) {
+                                String returnType = fullType.substring(start + 1, end).trim();
+                                return returnType;
+                            }
+                        }
+
+                        return "UNKNOWN"; // fallback if parsing fails
+                    }
+                }
+
+                // fallback to single child evaluation
                 for (TreeNode child : node.children) {
                     String type = checkExpression(child, table);
                     if (!type.equals("UNKNOWN")) return type;
                 }
+
                 return "UNKNOWN";
             }
-
 
             default:
                 return "UNKNOWN";

@@ -261,7 +261,8 @@ public class LL1Parser {
             }
 
             List<String> paramTypes = new ArrayList<>(paramMap.values());
-            table.addEntry(functionName, "FUNCIO(" + returnType + ")", "(" + String.join(", ", paramTypes) + ")", paramTypes);
+            table.addEntry(functionName, returnType, "(" + String.join(", ", paramTypes) + ")", paramTypes);
+
             for (Map.Entry<String, String> entry : paramMap.entrySet()) {
                 String paramName = entry.getKey();
                 String paramType = entry.getValue();
