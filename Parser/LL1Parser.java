@@ -110,18 +110,19 @@ public class LL1Parser {
                // terminal value
                 index++;
             }  else if (terminals.contains(top)) {
-            error("Unexpected token: " + currentToken + " (expected: " + top + "), skipping token.");
 
-            // add an error node to preserve AST structure
-            if (!treeStack.isEmpty()) {
-                TreeNode errorNode = treeStack.pop();
-                errorNode.label = "[ERROR]";
-                errorNode.value = "expected: " + top;
-                System.err.println(ANSI_RED + "Added error node: " + errorNode.label + " -> " + errorNode.value + ANSI_RESET);
-            }
+                error("Unexpected token: " + currentToken + " (expected: " + top + "), skipping token.");
 
-                stack.pop();
-                continue;
+                // add an error node to preserve AST structure
+                if (!treeStack.isEmpty()) {
+                    TreeNode errorNode = treeStack.pop();
+                    errorNode.label = "[ERROR]";
+                    errorNode.value = "expected: " + top;
+                    System.err.println(ANSI_RED + "Added error node: " + errorNode.label + " -> " + errorNode.value + ANSI_RESET);
+                }
+
+                    stack.pop();
+                    continue;
 
             } else if (parsingTable.containsKey(top) && parsingTable.get(top).containsKey(currentToken)) {
                 stack.pop();
@@ -147,18 +148,25 @@ public class LL1Parser {
                     stack.push(child.label);
                 }
              }
-        else {
+            else {
                 System.err.println("Syntax error at token: " + currentToken + ", expected: " + top);
-                Set<String> follow = followSet.get(top);
 
-                // skip tokens until a token in FOLLOW(top)
+                String found = currentToken;
+                String foundValue = tokens.get(index).getValue();
+
+                //detect misuse of '==' inside an assignment
+                if ("oper_rel".equals(found) && "==".equals(foundValue) && top.equals("InstTail")) {
+                    String msg = "Semantic Error: Used '==' where '=' was expected";
+                    System.err.println(ANSI_RED + msg + ANSI_RESET);
+                }
+
+                Set<String> follow = followSet.get(top);
                 while (!follow.contains(currentToken) && !currentToken.equals("$")) {
                     index++;
                     if (index >= tokens.size()) break;
                     currentToken = tokens.get(index).getTerminal();
                 }
 
-                // try to pop the non-terminal and continue
                 stack.pop();
                 if (!treeStack.isEmpty()) {
                     TreeNode skipped = treeStack.pop();
@@ -166,8 +174,9 @@ public class LL1Parser {
                     skipped.value = "recovered";
                     System.err.println(ANSI_RED + "Skipped non-terminal: " + top + " after syncing" + ANSI_RESET);
                 }
-
             }
+
+
 
         }
         root = programRoot;

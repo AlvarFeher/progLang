@@ -1,0 +1,4 @@
+SENCER y;
+INICI
+    y == 10;
+FI

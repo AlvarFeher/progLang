@@ -1,11 +1,13 @@
 SENCER x@    // invalid character '@'
+SENCER y;
 
-"unterminated string   // missing closing quote
+//"unterminated string   // missing closing quote
 
 FUNCION main() {
+    y == 10;
     123abc;             // wrong identifier
     x = 5;
-    y = 10;
+
     €money = 100;       // invalid character €
     !wrongToken;        // unrecognized token '!'
 }

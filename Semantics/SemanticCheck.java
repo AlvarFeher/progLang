@@ -38,15 +38,31 @@ public class SemanticCheck {
     private void checkNode(TreeNode node) {
         if (node == null) return;
         if ("Inst".equals(node.label) && node.children.size() >= 2) {
-            TreeNode idNode = node.children.get(0);
-            TreeNode tailNode = node.children.get(1);
+            TreeNode first = node.children.get(0);
+            TreeNode second = node.children.get(1);
 
-            if (!tailNode.children.isEmpty() && "(".equals(tailNode.children.get(0).label)) {
-                checkFunctionCall(idNode.value, tailNode);
-            } else {
+            // Case 1: Function call
+            if (!second.children.isEmpty() && "(".equals(second.children.get(0).label)) {
+                checkFunctionCall(first.value, second);
+            }
+
+            // Case 2: Assignment
+            else if (second.label.equals("InstTail") && second.children.size() >= 3 && "=".equals(second.children.get(0).label)) {
                 checkAssignment(node);
             }
+
+            // Case 3: Expression statement (e.g., y == 10;)
+            else {
+                TreeNode expr = second.find("Exp");
+                if (expr != null) {
+                    String type = checkExpression(expr, symbolsTable);
+                    errors.add("Useless expression: '" + expr.toString() + "' evaluates to " + type + " but is not used.");
+                }
+            }
         }
+
+
+
 
         if(node.label.equals("ExpSimple")) {
 
