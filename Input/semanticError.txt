@@ -13,6 +13,6 @@ FUNCIO Show(): LOGIC {
 
 INICI
     y = 5;                 //  Undeclared variable 'y'
-    x = Increment();       //  Missing argument
+    x = Increment(y);
     x = Show();            //  Assigning LOGIC return to SENCER variable
 FI
