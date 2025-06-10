@@ -76,7 +76,7 @@ public class LexicalAnalyzer {
                 }
             }
 
-            // Identifier: "test7_Test" for example
+            // Identifier: "test777_Test" for example
             if(Character.isLetter(curr)){
                 StringBuilder sb = new StringBuilder();
                 while (pos < len && (Character.isLetterOrDigit(content.charAt(pos)) || content.charAt(pos) == '_')) {
@@ -167,7 +167,7 @@ public class LexicalAnalyzer {
 
             }
 
-            System.err.println("Lexical Error: Unrecognized character '" + curr + "' at position " + pos);
+            System.err.println("Lexical Error: Unrecognized character '" + curr+"'");
             pos++;
             return new Token(TokenType.ERROR, String.valueOf(curr));
 

@@ -26,7 +26,7 @@ public class SemanticCheck {
         return false;
     }
     public void printErrors() {
-        System.out.println(ANSI_RED+"SEMANTIC ERRORS:");
+        System.out.println(ANSI_RED+"ERRORS:");
 
         for (String error : errors) {
             System.out.println(error);
@@ -41,17 +41,17 @@ public class SemanticCheck {
             TreeNode first = node.children.get(0);
             TreeNode second = node.children.get(1);
 
-            // Case 1: Function call
+            //Function call
             if (!second.children.isEmpty() && "(".equals(second.children.get(0).label)) {
                 checkFunctionCall(first.value, second);
             }
 
-            // Case 2: Assignment
+            //Assignment
             else if (second.label.equals("InstTail") && second.children.size() >= 3 && "=".equals(second.children.get(0).label)) {
                 checkAssignment(node);
             }
 
-            // Case 3: Expression statement (e.g., y == 10;)
+            //Expression ( y == 10;)
             else {
                 TreeNode expr = second.find("Exp");
                 if (expr != null) {
@@ -60,9 +60,6 @@ public class SemanticCheck {
                 }
             }
         }
-
-
-
 
         if(node.label.equals("ExpSimple")) {
 

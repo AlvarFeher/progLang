@@ -3,7 +3,8 @@ SENCER x
 FUNCION TestFunc(SENCER, y): SENCER {
     SENCER result;
 
-    result = ;      // Missing expression
+    result = ; // Missing expression
+
     result = result * ; // Expression ends with operator
     LLEGIR(x)        //  Missing semicolon
     ESCRIURE("Value: ", result);

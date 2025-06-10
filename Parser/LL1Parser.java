@@ -113,7 +113,7 @@ public class LL1Parser {
 
                 error("Unexpected token: " + currentToken + " (expected: " + top + "), skipping token.");
 
-                // add an error node to preserve AST structure
+                // add an error node to preserve tree structure
                 if (!treeStack.isEmpty()) {
                     TreeNode errorNode = treeStack.pop();
                     errorNode.label = "[ERROR]";
@@ -148,8 +148,12 @@ public class LL1Parser {
                     stack.push(child.label);
                 }
              }
+            // if the parsing table does not have the current rule, there is a syntax error
             else {
                 System.err.println("Syntax error at token: " + currentToken + ", expected: " + top);
+                if ("FIMENTRE".equals(top) && !currentToken.equals("FIMENTRE")) {
+                    System.err.println(ANSI_RED + "Missing 'FIMENTRE' before token: " + currentToken + ANSI_RESET);
+                }
 
                 String found = currentToken;
                 String foundValue = tokens.get(index).getValue();
@@ -160,12 +164,17 @@ public class LL1Parser {
                     System.err.println(ANSI_RED + msg + ANSI_RESET);
                 }
 
+
+
+                // use follow set to sync the parsing process and skip the error section
                 Set<String> follow = followSet.get(top);
                 while (!follow.contains(currentToken) && !currentToken.equals("$")) {
                     index++;
                     if (index >= tokens.size()) break;
                     currentToken = tokens.get(index).getTerminal();
                 }
+
+
 
                 stack.pop();
                 if (!treeStack.isEmpty()) {
@@ -175,8 +184,6 @@ public class LL1Parser {
                     System.err.println(ANSI_RED + "Skipped non-terminal: " + top + " after syncing" + ANSI_RESET);
                 }
             }
-
-
 
         }
         root = programRoot;
@@ -189,13 +196,7 @@ public class LL1Parser {
             printTree(root, 0);
         }
 
-        if (index == tokens.size()) {
-            System.out.println("Input accepted!");
-        } else {
-            error("Unexpected end of input");
-        }
     }
-
 
     private void error(String message) {
         System.err.println("Syntax Error: " + message);
@@ -350,9 +351,6 @@ public class LL1Parser {
 
         return paramMap;
     }
-
-
-
 
     private TreeNode findChild(TreeNode node, String label) {
         for (TreeNode child : node.children) {

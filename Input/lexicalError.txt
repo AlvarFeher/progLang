@@ -10,5 +10,10 @@ FUNCION main() {
 
     €money = 100;       // invalid character €
     !wrongToken;        // unrecognized token '!'
+
 }
+
+INICI
+z = 1;
+FI
 

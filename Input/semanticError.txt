@@ -1,5 +1,5 @@
 SENCER x;
-LOGIC x;                   // Redeclaration of variable 'x'
+                 // Redeclaration of variable 'x'
 
 FUNCIO Increment(SENCER n): SENCER {
     SENCER temp;
@@ -8,11 +8,11 @@ FUNCIO Increment(SENCER n): SENCER {
 };
 
 FUNCIO Show(): LOGIC {
-    RETORNAR Cert;           // Type mismatch: expected LOGIC, got SENCER (int)
+    RETORNAR Cert;
 };
 
 INICI
-    y = 5;                 //  Undeclared variable 'y'
+    y = 5;                 //  Undeclared variable y
     x = Increment(y);
     x = Show();            //  Assigning LOGIC return to SENCER variable
 FI
