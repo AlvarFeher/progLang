@@ -215,11 +215,11 @@ public class SemanticCheck {
                             }
                         }
 
-                        return "UNKNOWN"; // fallback if parsing fails
+                        return "UNKNOWN";
                     }
                 }
 
-                // fallback to single child evaluation
+
                 for (TreeNode child : node.children) {
                     String type = checkExpression(child, table);
                     if (!type.equals("UNKNOWN")) return type;

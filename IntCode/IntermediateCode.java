@@ -51,7 +51,7 @@ public class IntermediateCode {
                 String value = evalExp(exp);
                 code.add(new Quadruple("=", value, null, id));
             } else if (tail.children.size() > 0 && tail.children.get(0).label.equals("(")) {
-                //  function call: ID(...);
+                //  function call
                 TreeNode args = tail.find("Llista_expressio");
                 handleFunctionCall(first.value, args); // dont assign result
             }

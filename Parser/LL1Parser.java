@@ -277,7 +277,7 @@ public class LL1Parser {
                 String paramName = entry.getKey();
                 String paramType = entry.getValue();
                 table.addEntry(paramName, paramType, null, null);
-                System.out.println(">> Adding function parameter: " + paramName + " of type " + paramType);
+                System.out.println("Adding function parameter: " + paramName + " of type " + paramType);
             }
 
         }

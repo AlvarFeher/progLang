@@ -1,17 +1,12 @@
 SENCER x
 
-FUNCION TestFunc(SENCER, y): SENCER {
+FUNCION TestFunc(SENCER y): SENCER {
     SENCER result;
 
-    result = ; // Missing expression
 
     result = result * ; // Expression ends with operator
     LLEGIR(x)        //  Missing semicolon
     ESCRIURE("Value: ", result);
-
-    SI result > 0 LLAVORS
-        ESCRIURE("Positive");
-    // Missing FISI
 
     MENTRE result > 0 FER
         result = result - 1

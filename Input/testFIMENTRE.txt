@@ -3,6 +3,6 @@ SENCER x;
 INICI
     MENTRE x > 0 FER
         x = x - 1;
-    // FIMENTRE is missing here!
+    //FIMENTRE is missing here!
     y = 1;
 FI

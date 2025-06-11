@@ -11,7 +11,7 @@ public class SymbolsTable {
     }
 
     public void addEntry(String name, String type, String value, List<String> params) {
-        System.out.println(">> Adding symbol: " + name + " | Type: " + type + " | Value: " + value);
+        System.out.println("Adding symbol: " + name + " | Type: " + type + " | Value: " + value);
         if (!symbolsTable.containsKey(name)) {
             symbolsTable.put(name, new Symbol(type, name, value, params));
         } else {
